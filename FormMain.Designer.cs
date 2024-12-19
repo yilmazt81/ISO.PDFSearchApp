@@ -32,9 +32,11 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormMain));
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.panelD = new System.Windows.Forms.Panel();
+            this.buttonStartCopy = new System.Windows.Forms.Button();
+            this.buttonBrowstarget = new System.Windows.Forms.Button();
+            this.textBoxTargetFolder = new System.Windows.Forms.TextBox();
+            this.label14 = new System.Windows.Forms.Label();
             this.buttonRefreshFolder = new System.Windows.Forms.Button();
-            this.buttonClear = new System.Windows.Forms.Button();
-            this.buttonSearch = new System.Windows.Forms.Button();
             this.groupBoxNotInclude = new System.Windows.Forms.GroupBox();
             this.textBoxNotInlude6 = new System.Windows.Forms.TextBox();
             this.label8 = new System.Windows.Forms.Label();
@@ -48,6 +50,7 @@
             this.label12 = new System.Windows.Forms.Label();
             this.textBoxNotInlude1 = new System.Windows.Forms.TextBox();
             this.label13 = new System.Windows.Forms.Label();
+            this.buttonClear = new System.Windows.Forms.Button();
             this.groupBoxInclude = new System.Windows.Forms.GroupBox();
             this.textBoxInlude6 = new System.Windows.Forms.TextBox();
             this.label7 = new System.Windows.Forms.Label();
@@ -61,19 +64,16 @@
             this.label3 = new System.Windows.Forms.Label();
             this.textBoxInlude1 = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
+            this.buttonSearch = new System.Windows.Forms.Button();
             this.buttonBrowser = new System.Windows.Forms.Button();
             this.textBoxSourceFolder = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.dataGridViewSearchResult = new System.Windows.Forms.DataGridView();
-            this.buttonBrowstarget = new System.Windows.Forms.Button();
-            this.textBoxTargetFolder = new System.Windows.Forms.TextBox();
-            this.label14 = new System.Windows.Forms.Label();
-            this.buttonStartCopy = new System.Windows.Forms.Button();
-            this.cMenuStripGrid = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.MenuItemOpenPDF = new System.Windows.Forms.ToolStripMenuItem();
             this.Id = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.FileName = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.FilePath = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.cMenuStripGrid = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.MenuItemOpenPDF = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -104,23 +104,63 @@
             // 
             // panelD
             // 
+            this.panelD.AutoScroll = true;
             this.panelD.Controls.Add(this.buttonStartCopy);
             this.panelD.Controls.Add(this.buttonBrowstarget);
             this.panelD.Controls.Add(this.textBoxTargetFolder);
             this.panelD.Controls.Add(this.label14);
             this.panelD.Controls.Add(this.buttonRefreshFolder);
-            this.panelD.Controls.Add(this.buttonClear);
-            this.panelD.Controls.Add(this.buttonSearch);
             this.panelD.Controls.Add(this.groupBoxNotInclude);
+            this.panelD.Controls.Add(this.buttonClear);
             this.panelD.Controls.Add(this.groupBoxInclude);
+            this.panelD.Controls.Add(this.buttonSearch);
             this.panelD.Controls.Add(this.buttonBrowser);
             this.panelD.Controls.Add(this.textBoxSourceFolder);
             this.panelD.Controls.Add(this.label1);
-            this.panelD.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panelD.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panelD.Location = new System.Drawing.Point(0, 0);
             this.panelD.Name = "panelD";
-            this.panelD.Size = new System.Drawing.Size(503, 793);
+            this.panelD.Size = new System.Drawing.Size(503, 854);
             this.panelD.TabIndex = 0;
+            // 
+            // buttonStartCopy
+            // 
+            this.buttonStartCopy.Image = ((System.Drawing.Image)(resources.GetObject("buttonStartCopy.Image")));
+            this.buttonStartCopy.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.buttonStartCopy.Location = new System.Drawing.Point(281, 113);
+            this.buttonStartCopy.Name = "buttonStartCopy";
+            this.buttonStartCopy.Size = new System.Drawing.Size(123, 37);
+            this.buttonStartCopy.TabIndex = 11;
+            this.buttonStartCopy.Text = "Kopyala";
+            this.buttonStartCopy.UseVisualStyleBackColor = true;
+            this.buttonStartCopy.Click += new System.EventHandler(this.buttonStartCopy_Click);
+            // 
+            // buttonBrowstarget
+            // 
+            this.buttonBrowstarget.Image = ((System.Drawing.Image)(resources.GetObject("buttonBrowstarget.Image")));
+            this.buttonBrowstarget.Location = new System.Drawing.Point(322, 70);
+            this.buttonBrowstarget.Name = "buttonBrowstarget";
+            this.buttonBrowstarget.Size = new System.Drawing.Size(50, 24);
+            this.buttonBrowstarget.TabIndex = 10;
+            this.buttonBrowstarget.Text = "..";
+            this.buttonBrowstarget.UseVisualStyleBackColor = true;
+            this.buttonBrowstarget.Click += new System.EventHandler(this.buttonBrowstarget_Click);
+            // 
+            // textBoxTargetFolder
+            // 
+            this.textBoxTargetFolder.Location = new System.Drawing.Point(125, 67);
+            this.textBoxTargetFolder.Name = "textBoxTargetFolder";
+            this.textBoxTargetFolder.Size = new System.Drawing.Size(190, 27);
+            this.textBoxTargetFolder.TabIndex = 9;
+            // 
+            // label14
+            // 
+            this.label14.AutoSize = true;
+            this.label14.Location = new System.Drawing.Point(3, 70);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(107, 20);
+            this.label14.TabIndex = 8;
+            this.label14.Text = "Hedef Klasör";
             // 
             // buttonRefreshFolder
             // 
@@ -132,30 +172,6 @@
             this.buttonRefreshFolder.Text = "..";
             this.buttonRefreshFolder.UseVisualStyleBackColor = true;
             this.buttonRefreshFolder.Click += new System.EventHandler(this.buttonRefreshFolder_Click);
-            // 
-            // buttonClear
-            // 
-            this.buttonClear.Image = ((System.Drawing.Image)(resources.GetObject("buttonClear.Image")));
-            this.buttonClear.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.buttonClear.Location = new System.Drawing.Point(10, 728);
-            this.buttonClear.Name = "buttonClear";
-            this.buttonClear.Size = new System.Drawing.Size(123, 37);
-            this.buttonClear.TabIndex = 6;
-            this.buttonClear.Text = "Temizle";
-            this.buttonClear.UseVisualStyleBackColor = true;
-            this.buttonClear.Click += new System.EventHandler(this.buttonClear_Click);
-            // 
-            // buttonSearch
-            // 
-            this.buttonSearch.Image = ((System.Drawing.Image)(resources.GetObject("buttonSearch.Image")));
-            this.buttonSearch.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.buttonSearch.Location = new System.Drawing.Point(139, 728);
-            this.buttonSearch.Name = "buttonSearch";
-            this.buttonSearch.Size = new System.Drawing.Size(123, 37);
-            this.buttonSearch.TabIndex = 5;
-            this.buttonSearch.Text = "Ara";
-            this.buttonSearch.UseVisualStyleBackColor = true;
-            this.buttonSearch.Click += new System.EventHandler(this.buttonSearch_Click);
             // 
             // groupBoxNotInclude
             // 
@@ -173,7 +189,7 @@
             this.groupBoxNotInclude.Controls.Add(this.label12);
             this.groupBoxNotInclude.Controls.Add(this.textBoxNotInlude1);
             this.groupBoxNotInclude.Controls.Add(this.label13);
-            this.groupBoxNotInclude.Location = new System.Drawing.Point(7, 420);
+            this.groupBoxNotInclude.Location = new System.Drawing.Point(7, 478);
             this.groupBoxNotInclude.Name = "groupBoxNotInclude";
             this.groupBoxNotInclude.Size = new System.Drawing.Size(476, 302);
             this.groupBoxNotInclude.TabIndex = 4;
@@ -276,6 +292,18 @@
             this.label13.TabIndex = 0;
             this.label13.Text = "Kelime 1";
             // 
+            // buttonClear
+            // 
+            this.buttonClear.Image = ((System.Drawing.Image)(resources.GetObject("buttonClear.Image")));
+            this.buttonClear.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.buttonClear.Location = new System.Drawing.Point(12, 113);
+            this.buttonClear.Name = "buttonClear";
+            this.buttonClear.Size = new System.Drawing.Size(123, 37);
+            this.buttonClear.TabIndex = 6;
+            this.buttonClear.Text = "Temizle";
+            this.buttonClear.UseVisualStyleBackColor = true;
+            this.buttonClear.Click += new System.EventHandler(this.buttonClear_Click);
+            // 
             // groupBoxInclude
             // 
             this.groupBoxInclude.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
@@ -292,7 +320,7 @@
             this.groupBoxInclude.Controls.Add(this.label3);
             this.groupBoxInclude.Controls.Add(this.textBoxInlude1);
             this.groupBoxInclude.Controls.Add(this.label2);
-            this.groupBoxInclude.Location = new System.Drawing.Point(7, 112);
+            this.groupBoxInclude.Location = new System.Drawing.Point(7, 170);
             this.groupBoxInclude.Name = "groupBoxInclude";
             this.groupBoxInclude.Size = new System.Drawing.Size(476, 302);
             this.groupBoxInclude.TabIndex = 3;
@@ -395,6 +423,18 @@
             this.label2.TabIndex = 0;
             this.label2.Text = "Kelime 1";
             // 
+            // buttonSearch
+            // 
+            this.buttonSearch.Image = ((System.Drawing.Image)(resources.GetObject("buttonSearch.Image")));
+            this.buttonSearch.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.buttonSearch.Location = new System.Drawing.Point(141, 113);
+            this.buttonSearch.Name = "buttonSearch";
+            this.buttonSearch.Size = new System.Drawing.Size(123, 37);
+            this.buttonSearch.TabIndex = 5;
+            this.buttonSearch.Text = "Ara";
+            this.buttonSearch.UseVisualStyleBackColor = true;
+            this.buttonSearch.Click += new System.EventHandler(this.buttonSearch_Click);
+            // 
             // buttonBrowser
             // 
             this.buttonBrowser.Image = ((System.Drawing.Image)(resources.GetObject("buttonBrowser.Image")));
@@ -439,61 +479,6 @@
             this.dataGridViewSearchResult.TabIndex = 0;
             this.dataGridViewSearchResult.SelectionChanged += new System.EventHandler(this.dataGridViewSearchResult_SelectionChanged);
             // 
-            // buttonBrowstarget
-            // 
-            this.buttonBrowstarget.Image = ((System.Drawing.Image)(resources.GetObject("buttonBrowstarget.Image")));
-            this.buttonBrowstarget.Location = new System.Drawing.Point(322, 70);
-            this.buttonBrowstarget.Name = "buttonBrowstarget";
-            this.buttonBrowstarget.Size = new System.Drawing.Size(50, 24);
-            this.buttonBrowstarget.TabIndex = 10;
-            this.buttonBrowstarget.Text = "..";
-            this.buttonBrowstarget.UseVisualStyleBackColor = true;
-            this.buttonBrowstarget.Click += new System.EventHandler(this.buttonBrowstarget_Click);
-            // 
-            // textBoxTargetFolder
-            // 
-            this.textBoxTargetFolder.Location = new System.Drawing.Point(125, 67);
-            this.textBoxTargetFolder.Name = "textBoxTargetFolder";
-            this.textBoxTargetFolder.Size = new System.Drawing.Size(190, 27);
-            this.textBoxTargetFolder.TabIndex = 9;
-            // 
-            // label14
-            // 
-            this.label14.AutoSize = true;
-            this.label14.Location = new System.Drawing.Point(3, 70);
-            this.label14.Name = "label14";
-            this.label14.Size = new System.Drawing.Size(107, 20);
-            this.label14.TabIndex = 8;
-            this.label14.Text = "Hedef Klasör";
-            // 
-            // buttonStartCopy
-            // 
-            this.buttonStartCopy.Image = ((System.Drawing.Image)(resources.GetObject("buttonStartCopy.Image")));
-            this.buttonStartCopy.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.buttonStartCopy.Location = new System.Drawing.Point(284, 728);
-            this.buttonStartCopy.Name = "buttonStartCopy";
-            this.buttonStartCopy.Size = new System.Drawing.Size(123, 37);
-            this.buttonStartCopy.TabIndex = 11;
-            this.buttonStartCopy.Text = "Kopyala";
-            this.buttonStartCopy.UseVisualStyleBackColor = true;
-            this.buttonStartCopy.Click += new System.EventHandler(this.buttonStartCopy_Click);
-            // 
-            // cMenuStripGrid
-            // 
-            this.cMenuStripGrid.ImageScalingSize = new System.Drawing.Size(20, 20);
-            this.cMenuStripGrid.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.MenuItemOpenPDF});
-            this.cMenuStripGrid.Name = "cMenuStripGrid";
-            this.cMenuStripGrid.Size = new System.Drawing.Size(130, 30);
-            // 
-            // MenuItemOpenPDF
-            // 
-            this.MenuItemOpenPDF.Image = ((System.Drawing.Image)(resources.GetObject("MenuItemOpenPDF.Image")));
-            this.MenuItemOpenPDF.Name = "MenuItemOpenPDF";
-            this.MenuItemOpenPDF.Size = new System.Drawing.Size(214, 26);
-            this.MenuItemOpenPDF.Text = "PDF Aç";
-            this.MenuItemOpenPDF.Click += new System.EventHandler(this.MenuItemOpenPDF_Click);
-            // 
             // Id
             // 
             this.Id.DataPropertyName = "Id";
@@ -517,6 +502,22 @@
             this.FilePath.MinimumWidth = 6;
             this.FilePath.Name = "FilePath";
             this.FilePath.Width = 250;
+            // 
+            // cMenuStripGrid
+            // 
+            this.cMenuStripGrid.ImageScalingSize = new System.Drawing.Size(20, 20);
+            this.cMenuStripGrid.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.MenuItemOpenPDF});
+            this.cMenuStripGrid.Name = "cMenuStripGrid";
+            this.cMenuStripGrid.Size = new System.Drawing.Size(130, 30);
+            // 
+            // MenuItemOpenPDF
+            // 
+            this.MenuItemOpenPDF.Image = ((System.Drawing.Image)(resources.GetObject("MenuItemOpenPDF.Image")));
+            this.MenuItemOpenPDF.Name = "MenuItemOpenPDF";
+            this.MenuItemOpenPDF.Size = new System.Drawing.Size(129, 26);
+            this.MenuItemOpenPDF.Text = "PDF Aç";
+            this.MenuItemOpenPDF.Click += new System.EventHandler(this.MenuItemOpenPDF_Click);
             // 
             // FormMain
             // 
