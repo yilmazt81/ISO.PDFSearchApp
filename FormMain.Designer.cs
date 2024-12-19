@@ -69,11 +69,11 @@
             this.textBoxSourceFolder = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.dataGridViewSearchResult = new System.Windows.Forms.DataGridView();
+            this.cMenuStripGrid = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.MenuItemOpenPDF = new System.Windows.Forms.ToolStripMenuItem();
             this.Id = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.FileName = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.FilePath = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.cMenuStripGrid = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.MenuItemOpenPDF = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -98,8 +98,8 @@
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.dataGridViewSearchResult);
-            this.splitContainer1.Size = new System.Drawing.Size(1236, 854);
-            this.splitContainer1.SplitterDistance = 503;
+            this.splitContainer1.Size = new System.Drawing.Size(1208, 704);
+            this.splitContainer1.SplitterDistance = 491;
             this.splitContainer1.TabIndex = 0;
             // 
             // panelD
@@ -120,7 +120,7 @@
             this.panelD.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panelD.Location = new System.Drawing.Point(0, 0);
             this.panelD.Name = "panelD";
-            this.panelD.Size = new System.Drawing.Size(503, 854);
+            this.panelD.Size = new System.Drawing.Size(491, 704);
             this.panelD.TabIndex = 0;
             // 
             // buttonStartCopy
@@ -189,16 +189,16 @@
             this.groupBoxNotInclude.Controls.Add(this.label12);
             this.groupBoxNotInclude.Controls.Add(this.textBoxNotInlude1);
             this.groupBoxNotInclude.Controls.Add(this.label13);
-            this.groupBoxNotInclude.Location = new System.Drawing.Point(7, 478);
+            this.groupBoxNotInclude.Location = new System.Drawing.Point(7, 420);
             this.groupBoxNotInclude.Name = "groupBoxNotInclude";
-            this.groupBoxNotInclude.Size = new System.Drawing.Size(476, 302);
+            this.groupBoxNotInclude.Size = new System.Drawing.Size(464, 243);
             this.groupBoxNotInclude.TabIndex = 4;
             this.groupBoxNotInclude.TabStop = false;
             this.groupBoxNotInclude.Text = "Olmaması Gereken Kelimeler";
             // 
             // textBoxNotInlude6
             // 
-            this.textBoxNotInlude6.Location = new System.Drawing.Point(97, 248);
+            this.textBoxNotInlude6.Location = new System.Drawing.Point(97, 196);
             this.textBoxNotInlude6.Name = "textBoxNotInlude6";
             this.textBoxNotInlude6.Size = new System.Drawing.Size(227, 27);
             this.textBoxNotInlude6.TabIndex = 11;
@@ -206,7 +206,7 @@
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(17, 251);
+            this.label8.Location = new System.Drawing.Point(17, 199);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(74, 20);
             this.label8.TabIndex = 10;
@@ -214,7 +214,7 @@
             // 
             // textBoxNotInlude5
             // 
-            this.textBoxNotInlude5.Location = new System.Drawing.Point(97, 203);
+            this.textBoxNotInlude5.Location = new System.Drawing.Point(97, 163);
             this.textBoxNotInlude5.Name = "textBoxNotInlude5";
             this.textBoxNotInlude5.Size = new System.Drawing.Size(227, 27);
             this.textBoxNotInlude5.TabIndex = 9;
@@ -222,7 +222,7 @@
             // label9
             // 
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(17, 206);
+            this.label9.Location = new System.Drawing.Point(17, 166);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(74, 20);
             this.label9.TabIndex = 8;
@@ -230,7 +230,7 @@
             // 
             // textBoxNotInlude4
             // 
-            this.textBoxNotInlude4.Location = new System.Drawing.Point(97, 157);
+            this.textBoxNotInlude4.Location = new System.Drawing.Point(97, 130);
             this.textBoxNotInlude4.Name = "textBoxNotInlude4";
             this.textBoxNotInlude4.Size = new System.Drawing.Size(227, 27);
             this.textBoxNotInlude4.TabIndex = 7;
@@ -238,7 +238,7 @@
             // label10
             // 
             this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(17, 160);
+            this.label10.Location = new System.Drawing.Point(17, 133);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(74, 20);
             this.label10.TabIndex = 6;
@@ -246,7 +246,7 @@
             // 
             // textBoxNotInlude3
             // 
-            this.textBoxNotInlude3.Location = new System.Drawing.Point(97, 116);
+            this.textBoxNotInlude3.Location = new System.Drawing.Point(97, 97);
             this.textBoxNotInlude3.Name = "textBoxNotInlude3";
             this.textBoxNotInlude3.Size = new System.Drawing.Size(227, 27);
             this.textBoxNotInlude3.TabIndex = 5;
@@ -254,7 +254,7 @@
             // label11
             // 
             this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(17, 119);
+            this.label11.Location = new System.Drawing.Point(17, 100);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(74, 20);
             this.label11.TabIndex = 4;
@@ -262,7 +262,7 @@
             // 
             // textBoxNotInlude2
             // 
-            this.textBoxNotInlude2.Location = new System.Drawing.Point(97, 74);
+            this.textBoxNotInlude2.Location = new System.Drawing.Point(97, 64);
             this.textBoxNotInlude2.Name = "textBoxNotInlude2";
             this.textBoxNotInlude2.Size = new System.Drawing.Size(227, 27);
             this.textBoxNotInlude2.TabIndex = 3;
@@ -270,7 +270,7 @@
             // label12
             // 
             this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(17, 77);
+            this.label12.Location = new System.Drawing.Point(17, 67);
             this.label12.Name = "label12";
             this.label12.Size = new System.Drawing.Size(74, 20);
             this.label12.TabIndex = 2;
@@ -322,14 +322,14 @@
             this.groupBoxInclude.Controls.Add(this.label2);
             this.groupBoxInclude.Location = new System.Drawing.Point(7, 170);
             this.groupBoxInclude.Name = "groupBoxInclude";
-            this.groupBoxInclude.Size = new System.Drawing.Size(476, 302);
+            this.groupBoxInclude.Size = new System.Drawing.Size(464, 244);
             this.groupBoxInclude.TabIndex = 3;
             this.groupBoxInclude.TabStop = false;
             this.groupBoxInclude.Text = "Olması Gereken Kelimeler";
             // 
             // textBoxInlude6
             // 
-            this.textBoxInlude6.Location = new System.Drawing.Point(97, 248);
+            this.textBoxInlude6.Location = new System.Drawing.Point(97, 196);
             this.textBoxInlude6.Name = "textBoxInlude6";
             this.textBoxInlude6.Size = new System.Drawing.Size(227, 27);
             this.textBoxInlude6.TabIndex = 11;
@@ -337,7 +337,7 @@
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(17, 251);
+            this.label7.Location = new System.Drawing.Point(17, 199);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(74, 20);
             this.label7.TabIndex = 10;
@@ -345,7 +345,7 @@
             // 
             // textBoxInlude5
             // 
-            this.textBoxInlude5.Location = new System.Drawing.Point(97, 203);
+            this.textBoxInlude5.Location = new System.Drawing.Point(97, 163);
             this.textBoxInlude5.Name = "textBoxInlude5";
             this.textBoxInlude5.Size = new System.Drawing.Size(227, 27);
             this.textBoxInlude5.TabIndex = 9;
@@ -353,7 +353,7 @@
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(17, 206);
+            this.label6.Location = new System.Drawing.Point(17, 166);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(74, 20);
             this.label6.TabIndex = 8;
@@ -361,7 +361,7 @@
             // 
             // textBoxInlude4
             // 
-            this.textBoxInlude4.Location = new System.Drawing.Point(97, 157);
+            this.textBoxInlude4.Location = new System.Drawing.Point(97, 130);
             this.textBoxInlude4.Name = "textBoxInlude4";
             this.textBoxInlude4.Size = new System.Drawing.Size(227, 27);
             this.textBoxInlude4.TabIndex = 7;
@@ -369,7 +369,7 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(17, 160);
+            this.label5.Location = new System.Drawing.Point(17, 133);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(74, 20);
             this.label5.TabIndex = 6;
@@ -377,7 +377,7 @@
             // 
             // textBoxInlude3
             // 
-            this.textBoxInlude3.Location = new System.Drawing.Point(97, 116);
+            this.textBoxInlude3.Location = new System.Drawing.Point(97, 97);
             this.textBoxInlude3.Name = "textBoxInlude3";
             this.textBoxInlude3.Size = new System.Drawing.Size(227, 27);
             this.textBoxInlude3.TabIndex = 5;
@@ -385,7 +385,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(17, 119);
+            this.label4.Location = new System.Drawing.Point(17, 100);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(74, 20);
             this.label4.TabIndex = 4;
@@ -393,7 +393,7 @@
             // 
             // textBoxInlude2
             // 
-            this.textBoxInlude2.Location = new System.Drawing.Point(97, 74);
+            this.textBoxInlude2.Location = new System.Drawing.Point(97, 64);
             this.textBoxInlude2.Name = "textBoxInlude2";
             this.textBoxInlude2.Size = new System.Drawing.Size(227, 27);
             this.textBoxInlude2.TabIndex = 3;
@@ -401,7 +401,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(17, 77);
+            this.label3.Location = new System.Drawing.Point(17, 67);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(74, 20);
             this.label3.TabIndex = 2;
@@ -475,9 +475,25 @@
             this.dataGridViewSearchResult.Name = "dataGridViewSearchResult";
             this.dataGridViewSearchResult.RowHeadersWidth = 51;
             this.dataGridViewSearchResult.RowTemplate.Height = 24;
-            this.dataGridViewSearchResult.Size = new System.Drawing.Size(729, 854);
+            this.dataGridViewSearchResult.Size = new System.Drawing.Size(713, 704);
             this.dataGridViewSearchResult.TabIndex = 0;
             this.dataGridViewSearchResult.SelectionChanged += new System.EventHandler(this.dataGridViewSearchResult_SelectionChanged);
+            // 
+            // cMenuStripGrid
+            // 
+            this.cMenuStripGrid.ImageScalingSize = new System.Drawing.Size(20, 20);
+            this.cMenuStripGrid.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.MenuItemOpenPDF});
+            this.cMenuStripGrid.Name = "cMenuStripGrid";
+            this.cMenuStripGrid.Size = new System.Drawing.Size(130, 30);
+            // 
+            // MenuItemOpenPDF
+            // 
+            this.MenuItemOpenPDF.Image = ((System.Drawing.Image)(resources.GetObject("MenuItemOpenPDF.Image")));
+            this.MenuItemOpenPDF.Name = "MenuItemOpenPDF";
+            this.MenuItemOpenPDF.Size = new System.Drawing.Size(129, 26);
+            this.MenuItemOpenPDF.Text = "PDF Aç";
+            this.MenuItemOpenPDF.Click += new System.EventHandler(this.MenuItemOpenPDF_Click);
             // 
             // Id
             // 
@@ -503,27 +519,11 @@
             this.FilePath.Name = "FilePath";
             this.FilePath.Width = 250;
             // 
-            // cMenuStripGrid
-            // 
-            this.cMenuStripGrid.ImageScalingSize = new System.Drawing.Size(20, 20);
-            this.cMenuStripGrid.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.MenuItemOpenPDF});
-            this.cMenuStripGrid.Name = "cMenuStripGrid";
-            this.cMenuStripGrid.Size = new System.Drawing.Size(130, 30);
-            // 
-            // MenuItemOpenPDF
-            // 
-            this.MenuItemOpenPDF.Image = ((System.Drawing.Image)(resources.GetObject("MenuItemOpenPDF.Image")));
-            this.MenuItemOpenPDF.Name = "MenuItemOpenPDF";
-            this.MenuItemOpenPDF.Size = new System.Drawing.Size(129, 26);
-            this.MenuItemOpenPDF.Text = "PDF Aç";
-            this.MenuItemOpenPDF.Click += new System.EventHandler(this.MenuItemOpenPDF_Click);
-            // 
             // FormMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(10F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1236, 854);
+            this.ClientSize = new System.Drawing.Size(1208, 704);
             this.Controls.Add(this.splitContainer1);
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));

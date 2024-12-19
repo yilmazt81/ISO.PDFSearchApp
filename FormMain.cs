@@ -38,13 +38,13 @@ namespace ISO.PDFSearchApp
             textBoxSourceFolder.Text = _ini.GetValue("SourceFolder");
             textBoxTargetFolder.Text = _ini.GetValue("TargetFolder");
 
-            var maxTextSize = _ini.GetValue("MaxTextSize");
-            if (string.IsNullOrEmpty(maxTextSize))
-            {
-                maxTextSize = "25";
-                _ini.WriteValue("MaxTextSize", maxTextSize);
-                _ini.Save();
-            }
+            // var maxTextSize = _ini.GetValue("MaxTextSize");
+            /* if (string.IsNullOrEmpty(maxTextSize))
+             {
+                 maxTextSize = "25";
+                 _ini.WriteValue("MaxTextSize", maxTextSize);
+                 _ini.Save();
+             }*/
             dataGridViewSearchResult.AutoGenerateColumns = false;
 
 
@@ -56,7 +56,7 @@ namespace ISO.PDFSearchApp
                     listInludeText.Add(textBox);
 
                     textBox.Text = _ini.GetValue(textBox.Name);
-                    textBox.MaxLength = int.Parse(maxTextSize);
+                    //textBox.MaxLength = int.Parse(maxTextSize);
 
                 }
             }
@@ -67,7 +67,7 @@ namespace ISO.PDFSearchApp
                 {
                     var textBox = (TextBox)control;
                     listNotIncludeText.Add(textBox);
-                    textBox.MaxLength = int.Parse(maxTextSize);
+                    //  textBox.MaxLength = int.Parse(maxTextSize);
                     textBox.Text = _ini.GetValue(textBox.Name);
                 }
             }
@@ -90,7 +90,7 @@ namespace ISO.PDFSearchApp
         {
             try
             {
-                var files = System.IO.Directory.GetFiles(sourceFolder, "*.pdf");
+                var files = System.IO.Directory.GetFiles(sourceFolder, "*.pdf",SearchOption.AllDirectories);
 
                 indexFolder = Path.Combine(sourceFolder, "indexfolder");
                 if (Directory.Exists(indexFolder))
@@ -108,6 +108,7 @@ namespace ISO.PDFSearchApp
                 }
 
                 List<PDFText> lAllText = new List<PDFText>();
+                var firstFile = 0;
                 foreach (var file in files)
                 {
                     // var pdfComplated = Path.ChangeExtension(file, ".txt");
@@ -120,6 +121,13 @@ namespace ISO.PDFSearchApp
                     }
 
                     var pageContent = ReadPdfFile(file);
+
+                    if (firstFile == 0)
+                    {
+                        var difst = pageContent.FirstOrDefault();
+                        difst.PageText = difst.PageText + " mustafa".ToUpper();
+
+                    }
                     lAllText.InsertRange(lAllText.Count, pageContent);
                     foreach (var page in pageContent)
                     {
@@ -129,9 +137,10 @@ namespace ISO.PDFSearchApp
 
                         File.WriteAllText(pdfInner, page.PageText, Encoding.UTF8);
                     }
+                    firstFile++;
                     // File.WriteAllText(pdfComplated, "Complated");
                 }
-                Helper.LuceneHelper.CreateFolderIndex(indexFolder, lAllText);
+                //Helper.LuceneHelper.CreateFolderIndex(indexFolder, lAllText);
                 _ini.WriteValue("SourceFolder", textBoxSourceFolder.Text);
                 _ini.Save();
                 MessageBox.Show("İşlem bitti , arama yapabilirsiniz", "Bilgi", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -211,7 +220,15 @@ namespace ISO.PDFSearchApp
                     MessageBox.Show("Yenile butonuna basınız.", "Bilgi", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     return;
                 }
-                pDFDocumentSearchResults = LuceneHelper.SearchDocument(indexFolder, mustTex.ToArray(), notmustText.ToArray());
+                if (mustTex.Count == 0 && notmustText.Count == 0)
+                {
+                    pDFDocumentSearchResults = FileSearchHelper.GetAll(indexFolder);
+                }
+                else
+                {
+                    pDFDocumentSearchResults = FileSearchHelper.SearchDocument(indexFolder, mustTex.ToArray(), notmustText.ToArray());
+                }
+
                 dataGridViewSearchResult.DataSource = pDFDocumentSearchResults;
 
 

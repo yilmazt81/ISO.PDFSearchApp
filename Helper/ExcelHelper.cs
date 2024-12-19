@@ -64,24 +64,31 @@ namespace ISO.PDFSearchApp.Helper
             var pdfIndexPath = Path.Combine(Path.GetDirectoryName(pdfFilePath), Path.GetFileNameWithoutExtension(pdfFilePath));
 
             var txtFiles = Directory.GetFiles(pdfIndexPath);
-            foreach (var txtFile in txtFiles)
+            try
             {
-                var txtLines = File.ReadAllLines(txtFile, Encoding.UTF8);
-                foreach (var txtLine in txtLines)
+                foreach (var txtFile in txtFiles)
                 {
-                    if (txtLine.Contains(NAICSParam))
+                    var txtLines = File.ReadAllLines(txtFile, Encoding.UTF8);
+                    foreach (var txtLine in txtLines)
                     {
-                        var startIndex = NAICSParam.Length + 1;
-                        var lastIndex = txtLine.Length - startIndex;
+                        if (txtLine.Contains(NAICSParam))
+                        {
+                            var startIndex = NAICSParam.Length + 1;
+                            var lastIndex = txtLine.Length - startIndex;
 
-                        NAICS = txtLine.Substring(startIndex, lastIndex).Trim();
+                            NAICS = txtLine.Substring(startIndex, lastIndex).Trim();
+                            break;
+                        }
+                    }
+                    if (!string.IsNullOrEmpty(NAICS))
+                    {
                         break;
                     }
                 }
-                if (!string.IsNullOrEmpty(NAICS))
-                {
-                    break;
-                }
+            }
+            catch (Exception ex)
+            {
+                return "Error";
             }
 
             return NAICS;
@@ -94,33 +101,38 @@ namespace ISO.PDFSearchApp.Helper
             var pdfIndexPath = Path.Combine(Path.GetDirectoryName(pdfFilePath), Path.GetFileNameWithoutExtension(pdfFilePath));
 
             var txtFiles = Directory.GetFiles(pdfIndexPath);
-            foreach (var txtFile in txtFiles)
-            {
-                var txtLines = File.ReadAllLines(txtFile, Encoding.UTF8);
-                bool findItemDescription = false;
-                foreach (var txtLine in txtLines)
-                {
-                    if (txtLine.Contains(itemDescriptionParam) && !txtLine.Contains("PLEASE CONTACT THE BUYER SHOWN ABOVE."))
-                    {
-                        findItemDescription = true;
-                        continue;
 
-                    }
-                    if (findItemDescription)
+            try
+            {
+                foreach (var txtFile in txtFiles)
+                {
+                    var txtLines = File.ReadAllLines(txtFile, Encoding.UTF8);
+                    bool findItemDescription = false;
+                    foreach (var txtLine in txtLines)
                     {
-                        itemDescription = txtLine.Trim();
+                        if (txtLine.Contains(itemDescriptionParam) && !txtLine.Contains("PLEASE CONTACT THE BUYER SHOWN ABOVE."))
+                        {
+                            findItemDescription = true;
+                            continue;
+
+                        }
+                        if (findItemDescription)
+                        {
+                            itemDescription = txtLine.Trim();
+                            break;
+                        }
+                    }
+                    if (!string.IsNullOrEmpty(itemDescription))
+                    {
                         break;
                     }
                 }
-                if (!string.IsNullOrEmpty(itemDescription))
-                {
-                    break;
-                }
             }
-            if (string.IsNullOrEmpty(itemDescription))
+            catch (Exception ex)
             {
-                System.Diagnostics.Debug.Write("ddd");
+                return "Error";
             }
+
             return itemDescription;
         }
 
@@ -131,50 +143,62 @@ namespace ISO.PDFSearchApp.Helper
             var pdfIndexPath = Path.Combine(Path.GetDirectoryName(pdfFilePath), Path.GetFileNameWithoutExtension(pdfFilePath));
 
             var txtFiles = Directory.GetFiles(pdfIndexPath);
-            foreach (var txtFile in txtFiles)
-            {
-                var txtLines = File.ReadAllLines(txtFile, Encoding.UTF8);
-                bool findItemDescription = false;
-                int quantityIndex = 0;
-                /*
-                if (Path.GetFileNameWithoutExtension(pdfIndexPath)== "SPE4A624T598A" && Path.GetFileNameWithoutExtension(txtFile)== "Page7")
-                {
-                    System.Diagnostics.Debug.WriteLine("ddd");
-                }*/
-                foreach (var txtLine in txtLines)
-                {
-                    if (txtLine.Contains(itemDescriptionParam))
-                    {
-                        findItemDescription = true;
-                        quantityIndex = txtLine.IndexOf("QUANTITY");
-                        continue;
 
-                    }
-                    if (findItemDescription)
+            try
+            {
+                foreach (var txtFile in txtFiles)
+                {
+                    var txtLines = File.ReadAllLines(txtFile, Encoding.UTF8);
+                    bool findItemDescription = false;
+                    int quantityIndex = 0;
+                    /*
+                    if (Path.GetFileNameWithoutExtension(pdfIndexPath)== "SPE4A624T598A" && Path.GetFileNameWithoutExtension(txtFile)== "Page7")
                     {
-                        var tempStr = txtLine.Substring(quantityIndex, 8).Trim();
-                        var split = tempStr.Split('.');
-                        if (split.Length == 1)
+                        System.Diagnostics.Debug.WriteLine("ddd");
+                    }*/
+                    foreach (var txtLine in txtLines)
+                    {
+                        if (txtLine.Contains(itemDescriptionParam))
                         {
-                            itemDescription = tempStr;
+                            findItemDescription = true;
+                            quantityIndex = txtLine.IndexOf("QUANTITY");
+                            if (quantityIndex == -1)
+                            {
+                                findItemDescription = false;
+                            }
+                            else
+                            {
+                                continue;
+                            }
                         }
-                        else
+                        if (findItemDescription)
                         {
-                            itemDescription = split[0];
+                            var tempStr = txtLine.Substring(quantityIndex, 8).Trim();
+                            var split = tempStr.Split('.');
+                            if (split.Length == 1)
+                            {
+                                itemDescription = tempStr;
+                            }
+                            else
+                            {
+                                itemDescription = split[0];
+                            }
+                            break;
                         }
+                    }
+                    if (!string.IsNullOrEmpty(itemDescription))
+                    {
                         break;
                     }
                 }
-                if (!string.IsNullOrEmpty(itemDescription))
-                {
-                    break;
-                }
+            }
+            catch (Exception)
+            {
+
+                return "Error";
             }
 
-            if (string.IsNullOrEmpty(itemDescription))
-            {
-                System.Diagnostics.Debug.Write("ddd");
-            }
+
             return itemDescription;
         }
 

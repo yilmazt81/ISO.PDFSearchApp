@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using iTextSharp.text;
+using Lucene.Net.Analysis;
 using Lucene.Net.Analysis.Standard;
 using Lucene.Net.Documents;
 using Lucene.Net.Index;
@@ -22,7 +23,7 @@ namespace ISO.PDFSearchApp.Helper
         {
             Lucene.Net.Store.Directory directory = FSDirectory.Open(new DirectoryInfo(indexPath));
 
-            var analyzer = new StandardAnalyzer(Lucene.Net.Util.Version.LUCENE_30);
+            var analyzer = new WhitespaceAnalyzer();
             var writer = new IndexWriter(directory, analyzer, IndexWriter.MaxFieldLength.UNLIMITED);
             var distinctFiles = pdfFiles.Select(s => s.FileName).Distinct().ToList();
 
@@ -38,21 +39,21 @@ namespace ISO.PDFSearchApp.Helper
                 }
                 AddDocument(writer, txtAllText, distinctFile, filePath);
             }
-            writer.Commit(); 
+            writer.Commit();
             writer.Dispose();
 
         }
-      
-        private static BooleanQuery GetQuery(string[] term, string[] exts, StandardAnalyzer analyzer)
+
+        private static BooleanQuery GetQuery(string[] term, string[] exts, WhitespaceAnalyzer analyzer)
         {
             string[] fields = { "content" };
-            MultiFieldQueryParser parser = new MultiFieldQueryParser( Lucene.Net.Util.Version.LUCENE_30,fields, analyzer);
+            MultiFieldQueryParser parser = new MultiFieldQueryParser(Lucene.Net.Util.Version.LUCENE_30, fields, analyzer);
             BooleanQuery combinedQuery = new BooleanQuery();
 
             foreach (var field in term)
             {
                 Query multiFieldQuery = parser.Parse(field);
-                TermQuery extQuery = new TermQuery(new Term("content",field));
+                TermQuery extQuery = new TermQuery(new Term("content", field));
                 combinedQuery.Add(multiFieldQuery, Occur.MUST);
             }
 
@@ -64,11 +65,64 @@ namespace ISO.PDFSearchApp.Helper
                 combinedQuery.Add(multiFieldQuery, Occur.MUST_NOT);
             }
 
-            
+
 
             return combinedQuery;
         }
         public static List<PDFDocumentSearchResult> SearchDocument(string indexPath, string[] must, string[] notMust)
+        {
+            Lucene.Net.Store.Directory directory = FSDirectory.Open(new DirectoryInfo(indexPath));
+
+            var analyzer = new WhitespaceAnalyzer();
+
+            var searcher = new IndexSearcher(directory, true);
+
+            
+            var parser = new QueryParser(Lucene.Net.Util.Version.LUCENE_30, "content", analyzer);
+
+            var booleanQuery = GetQuery(must, notMust, analyzer);
+
+
+            List<PDFDocumentSearchResult> pDFDocumentSearchResults = new List<PDFDocumentSearchResult>();
+            // 4. Sorguyu çalıştır
+
+            /* Query query = parser.Parse(must[0]);
+             var results = searcher.Search(query, 500);
+             */
+            var results = searcher.Search(booleanQuery, 500);
+
+            foreach (var hit in results.ScoreDocs)
+            {
+                var foundDoc = searcher.Doc(hit.Doc);
+                var content = foundDoc.Get("content");
+ /*
+                foreach (var item in notMust)
+                {
+                    if (content.Contains(item))
+                    {
+
+                    }
+                }*/
+
+
+                pDFDocumentSearchResults.Add(new PDFDocumentSearchResult()
+                {
+                    FileName = foundDoc.Get("fileName"),
+                    FilePath = foundDoc.Get("filePath"),
+                    Id = foundDoc.Get("id"),
+                    Content= foundDoc.Get("content")
+                });
+                Console.WriteLine($"ID: {foundDoc.Get("id")}, İçerik: {foundDoc.Get("content")}");
+            }
+
+
+            searcher.Dispose();
+            directory.Dispose();
+
+            return pDFDocumentSearchResults;
+        }
+
+        public static List<PDFDocumentSearchResult> GetAll(string indexPath)
         {
             Lucene.Net.Store.Directory directory = FSDirectory.Open(new DirectoryInfo(indexPath));
 
@@ -77,36 +131,28 @@ namespace ISO.PDFSearchApp.Helper
             var searcher = new IndexSearcher(directory, true);
             var parser = new QueryParser(Lucene.Net.Util.Version.LUCENE_30, "content", analyzer);
 
-            var booleanQuery = GetQuery(must, notMust, analyzer);
-            /*
-            foreach (var mustOne in must)
-            {
-                var mustQuery = new TermQuery(new Term("content", mustOne));
-                booleanQuery.Add(mustQuery,  Occur.MUST);
-            }
-            foreach (var notMustOne in notMust)
-            {
-                var mustNotQuery = new TermQuery(new Term("content", notMustOne));
-                 
-                booleanQuery.Add(mustNotQuery, Occur.MUST_NOT);  
-            }*/
 
             List<PDFDocumentSearchResult> pDFDocumentSearchResults = new List<PDFDocumentSearchResult>();
             // 4. Sorguyu çalıştır
 
-           /* Query query = parser.Parse(must[0]);
+            /* Query query = parser.Parse(must[0]);
+             var results = searcher.Search(query, 500);
+             */
+
+            Query query = parser.Parse("*:*");
             var results = searcher.Search(query, 500);
-            */
-            var results = searcher.Search(booleanQuery, 500);
 
             foreach (var hit in results.ScoreDocs)
             {
                 var foundDoc = searcher.Doc(hit.Doc);
+
+
                 pDFDocumentSearchResults.Add(new PDFDocumentSearchResult()
                 {
                     FileName = foundDoc.Get("fileName"),
-                    FilePath= foundDoc.Get("filePath"),
-                    Id= foundDoc.Get("id"),
+                    FilePath = foundDoc.Get("filePath"),
+                    Id = foundDoc.Get("id"),
+                    Content = foundDoc.Get("content")
                 });
                 Console.WriteLine($"ID: {foundDoc.Get("id")}, İçerik: {foundDoc.Get("content")}");
             }
