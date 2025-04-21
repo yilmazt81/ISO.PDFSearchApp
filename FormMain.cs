@@ -90,7 +90,7 @@ namespace ISO.PDFSearchApp
         {
             try
             {
-                var files = System.IO.Directory.GetFiles(sourceFolder, "*.pdf",SearchOption.AllDirectories);
+                var files = System.IO.Directory.GetFiles(sourceFolder, "*.pdf", SearchOption.AllDirectories);
 
                 indexFolder = Path.Combine(sourceFolder, "indexfolder");
                 if (Directory.Exists(indexFolder))
@@ -122,12 +122,7 @@ namespace ISO.PDFSearchApp
 
                     var pageContent = ReadPdfFile(file);
 
-                    if (firstFile == 0)
-                    {
-                        var difst = pageContent.FirstOrDefault();
-                        difst.PageText = difst.PageText + " mustafa".ToUpper();
 
-                    }
                     lAllText.InsertRange(lAllText.Count, pageContent);
                     foreach (var page in pageContent)
                     {
@@ -160,6 +155,7 @@ namespace ISO.PDFSearchApp
             {
                 PdfReader pdfReader = new PdfReader(fileName);
 
+
                 for (int page = 1; page <= pdfReader.NumberOfPages; page++)
                 {
                     ITextExtractionStrategy strategy = new SimpleTextExtractionStrategy();
@@ -173,16 +169,19 @@ namespace ISO.PDFSearchApp
                         PageNumber = page,
                         PageText = currentText,
                         FileName = Path.GetFileName(fileName),
-                        FilePath = fileName
+                        FilePath = fileName,
+                        StopShars = currentText.Contains(skippText)
+
                     });
 
-                    if (!string.IsNullOrEmpty(skippText) && currentText.Contains(skippText))
-                    {
-                        break;
-                    }
                 }
                 pdfReader.Close();
             }
+
+            var maxstopChar = pDFTexts.Where(s => s.StopShars).Max(s => s.PageNumber);
+            var removeLen = pDFTexts.Count - maxstopChar;
+            pDFTexts.RemoveRange(maxstopChar, removeLen);
+
             return pDFTexts;
         }
 
@@ -288,7 +287,7 @@ namespace ISO.PDFSearchApp
                     File.Copy(oneFile.FilePath, newFilePath, true);
                 }
 
-                string teplateexcelFilePath = Path.Combine(Application.StartupPath, "EmptyExportTemplate.xlsx");
+                string teplateexcelFilePath = Path.Combine(Application.StartupPath, "ExcelTemplate02.xlsx");
 
                 string newExcelFilePath = Path.Combine(textBoxTargetFolder.Text, "Export_" + DateTime.Now.ToString("yyyyMMdd") + "_" + DateTime.Now.ToString("HHmmss") + ".xlsx");
 

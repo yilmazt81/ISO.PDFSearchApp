@@ -26,15 +26,40 @@ namespace ISO.PDFSearchApp.Helper
                 foreach (var onePDF in pDFDocuments)
                 {
                     var nssns = GetNSN2(onePDF.FilePath);
+                    var nSN2 = FormatNSN2(nssns);
+                    var nsn2Group = string.Empty;
+                    if (!string.IsNullOrEmpty(nSN2))
+                    {
+                        var nsnPart = nSN2.Split('-');
+                        if (nsnPart.Length > 1)
+                        {
+                            nsn2Group = nsnPart[0];
+                        }
+                    }
+                    int productSummer = 0;
+                    int adressCount = 0;
+                    string ui = string.Empty;
+                    string inspectation = string.Empty;
+                    var productSum = ReadProductLine(onePDF.FilePath,ref productSummer,ref adressCount,ref ui,ref inspectation);
+
+                    SetCellValue(worksheetPart, rowIndex, "S", productSum);
+                    SetCellValue(worksheetPart, rowIndex, "I", ui);
+                    SetCellValue(worksheetPart, rowIndex, "M", inspectation);
+                    SetCellValue(worksheetPart, rowIndex, "H", adressCount.ToString());
                     SetCellValue(worksheetPart, rowIndex, "A", GetNAICS(onePDF.FilePath));
-                    SetCellValue(worksheetPart, rowIndex, "B", FormatNSN2(nssns));
-                    SetCellValue(worksheetPart, rowIndex, "C", nssns);
-                    SetCellValue(worksheetPart, rowIndex, "D", Path.GetFileNameWithoutExtension(onePDF.FileName));
-                    SetCellValue(worksheetPart, rowIndex, "E", GetItemDescription(onePDF.FilePath));
+                    SetCellValue(worksheetPart, rowIndex, "B", nsn2Group);
+                    SetCellValue(worksheetPart, rowIndex, "C", nSN2);
+                    SetCellValue(worksheetPart, rowIndex, "D", nssns);
+                    SetCellValue(worksheetPart, rowIndex, "E", Path.GetFileNameWithoutExtension(onePDF.FileName));
+                 //   SetCellValue(worksheetPart, rowIndex, "F", GetItemDescription(onePDF.FilePath));
 
-                    SetCellValue(worksheetPart, rowIndex, "F", GetQuantity(onePDF.FilePath));
+                    SetCellValue(worksheetPart, rowIndex, "G", GetQuantity(onePDF.FilePath));
 
-                    SetCellValue(worksheetPart, rowIndex, "G", GetDeliveryInDays(onePDF.FilePath));
+
+
+                    SetCellValue(worksheetPart, rowIndex, "K", GetDeliveryInDays(onePDF.FilePath));
+                    SetCellValue(worksheetPart, rowIndex, "L", GetDeliveryFob(onePDF.FilePath));
+                    SetCellValue(worksheetPart, rowIndex, "O", GetPartPieceNumber(onePDF.FilePath));
 
                     bool noHistory = CheckNoHistoryAvailable(onePDF.FilePath);
                     if (!noHistory)
@@ -42,10 +67,10 @@ namespace ISO.PDFSearchApp.Helper
                         string histroyQantity = string.Empty;
                         string unitCost = string.Empty;
                         string awdDate = string.Empty;
-                        SetCellValue(worksheetPart, rowIndex, "H", GetCage(onePDF.FilePath, ref histroyQantity, ref unitCost, ref awdDate));
-                        SetCellValue(worksheetPart, rowIndex, "I", histroyQantity);
-                        SetCellValue(worksheetPart, rowIndex, "J", unitCost);
-                        SetCellValue(worksheetPart, rowIndex, "K", awdDate);
+                        SetCellValue(worksheetPart, rowIndex, "R", GetCage(onePDF.FilePath, ref histroyQantity, ref unitCost, ref awdDate));
+                        SetCellValue(worksheetPart, rowIndex, "S", histroyQantity);
+                        SetCellValue(worksheetPart, rowIndex, "T", unitCost);
+                        SetCellValue(worksheetPart, rowIndex, "V", awdDate);
                     }
 
                     rowIndex++;
@@ -54,6 +79,93 @@ namespace ISO.PDFSearchApp.Helper
                 worksheetPart.Worksheet.Save();
                 spreadSheet.Save();
             }
+
+        }
+        private int Yuvarla(string t)
+        {
+            if (t.IndexOf(".") > -1)
+            {
+                var index = t.IndexOf(".");
+
+                var newT = t.Substring(0,index);
+
+                return int.Parse(newT);
+            }
+            else
+            {
+               return int.Parse(t);
+
+            }
+        }
+        private string ReadProductLine(string pdfFilePath,ref int productSummer,ref int adressCount,ref string ui,ref string inspectationPoint)
+        {
+            var productLine = System.Configuration.ConfigurationManager.AppSettings["ProductLineParam"];
+            var adressLineParams = System.Configuration.ConfigurationManager.AppSettings["AdressLineParam"].Split('|');
+            var inspectationPointParam = System.Configuration.ConfigurationManager.AppSettings["InspectationPointParam"];
+
+            var pdfIndexPath = Path.Combine(Path.GetDirectoryName(pdfFilePath), Path.GetFileNameWithoutExtension(pdfFilePath));
+
+            var txtFiles = Directory.GetFiles(pdfIndexPath);
+
+            var findAdress = false;
+            foreach (var txtFile in txtFiles)
+            {
+                var findProductLine = false;
+                var txtLines = File.ReadAllLines(txtFile, Encoding.UTF8);
+                foreach (var txtLine in txtLines)
+                {
+                    if (txtLine.Contains(productLine))
+                    {
+                        findProductLine = true;
+                        continue;
+                    }
+                    if (findProductLine)
+                    {
+                        var txtParts = txtLine.Split(' ');
+                        if (txtParts.Length>18)
+                        {
+                            try
+                            {
+                              
+                                productSummer +=  Yuvarla(txtParts[19].Replace(",", ""));
+                                ui = txtParts[15];
+                            }
+                            catch (Exception)
+                            {
+                                System.Diagnostics.Debug.WriteLine("ddd");
+                            } 
+                        } 
+                         
+                    } 
+                    
+                    if (findProductLine)
+                    {
+                        foreach (var adressLine in adressLineParams)
+                        {
+                            if (txtLine.Contains(adressLine))
+                            {
+                                findProductLine = true;
+                                adressCount++;
+                            }
+                        }
+                    }
+
+                    if (findProductLine)
+                    {
+                        var findInspect = txtLine.Contains(inspectationPointParam);
+                        if (findInspect)
+                        {
+                            var split = txtLine.Trim().Split(' ').Where(s => !string.IsNullOrEmpty(s)).ToArray();
+
+
+                            inspectationPoint = split[2];
+                            inspectationPoint = inspectationPoint.Substring(0, 4);
+                        }
+                    }
+                } 
+            }
+
+            return "";
 
         }
 
@@ -201,7 +313,99 @@ namespace ISO.PDFSearchApp.Helper
 
             return itemDescription;
         }
+        private string GetPartPieceNumber(string pdfFilePath)
+        {
 
+            var partypieceNumberParam = System.Configuration.ConfigurationManager.AppSettings["PartPieceNumber"];
+
+            var pdfIndexPath = Path.Combine(Path.GetDirectoryName(pdfFilePath), Path.GetFileNameWithoutExtension(pdfFilePath));
+
+            var txtFiles = Directory.GetFiles(pdfIndexPath);
+            var partPieceNumber = "";
+            foreach (var txtFile in txtFiles)
+            {
+                var txtLines = File.ReadAllLines(txtFile, Encoding.UTF8);
+                bool findItemDescription = false;
+                int quantityIndex = 0;
+
+                foreach (var txtLine in txtLines)
+                {
+                    if (string.IsNullOrEmpty(txtLine.Trim()))
+                        continue;
+                    if (txtLine.Contains(partypieceNumberParam))
+                    {
+                        findItemDescription = true;
+                        
+
+                    }
+                    if (findItemDescription)
+                    {
+                        var split = txtLine.Trim().Split(' ').Where(s => !string.IsNullOrEmpty(s)).ToArray();
+
+                        if (split.Length == 4)
+                        {
+                            partPieceNumber = split[3];
+
+                        }
+
+                        break;
+                    }
+                }
+                if (!string.IsNullOrEmpty(partPieceNumber))
+                {
+                    break;
+                }
+            } 
+            return partPieceNumber;
+
+        }
+        private string GetDeliveryFob(string pdfFilePath)
+        {
+
+            var itemDeliveryFobParam = System.Configuration.ConfigurationManager.AppSettings["DeliveryFob"];
+
+            var pdfIndexPath = Path.Combine(Path.GetDirectoryName(pdfFilePath), Path.GetFileNameWithoutExtension(pdfFilePath));
+
+            var txtFiles = Directory.GetFiles(pdfIndexPath);
+            var deliveryFob = "";
+            foreach (var txtFile in txtFiles)
+            {
+                var txtLines = File.ReadAllLines(txtFile, Encoding.UTF8);
+                bool findItemDescription = false;
+                int quantityIndex = 0;
+
+                foreach (var txtLine in txtLines)
+                {
+                    if (string.IsNullOrEmpty(txtLine.Trim()))
+                        continue;
+                    if (txtLine.Contains(itemDeliveryFobParam))
+                    {
+                        findItemDescription = true;
+                        //continue;
+
+                    }
+                    if (findItemDescription)
+                    {
+                        var split = txtLine.Trim().Split(' ').Where(s => !string.IsNullOrEmpty(s)).ToArray();
+
+                     
+                          deliveryFob = split[2]; 
+
+                        break;
+                    }
+                }
+                if (!string.IsNullOrEmpty(deliveryFob))
+                {
+                    break;
+                }
+            }
+            if (!string.IsNullOrEmpty(deliveryFob))
+            {
+                deliveryFob = deliveryFob.Substring(0, 4);
+            }
+            return deliveryFob;
+
+        }
         private string GetCage(string pdfFilePath, ref string historyQantity, ref string unitCost, ref string awdDate)
         {
             var itemDescriptionParam = System.Configuration.ConfigurationManager.AppSettings["CageParam"];
@@ -214,11 +418,7 @@ namespace ISO.PDFSearchApp.Helper
                 var txtLines = File.ReadAllLines(txtFile, Encoding.UTF8);
                 bool findItemDescription = false;
                 int quantityIndex = 0;
-                /*
-                if (Path.GetFileNameWithoutExtension(pdfIndexPath)== "SPE4A624T598A" && Path.GetFileNameWithoutExtension(txtFile)== "Page7")
-                {
-                    System.Diagnostics.Debug.WriteLine("ddd");
-                }*/
+            
                 foreach (var txtLine in txtLines)
                 {
                     if (string.IsNullOrEmpty(txtLine.Trim()))

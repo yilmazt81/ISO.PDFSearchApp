@@ -126,7 +126,9 @@
     <Content Include="EmptyExportTemplate.xlsx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <None Include="ISO.PDFSearchApp_TemporaryKey.pfx" />
+    <None Include="ExcelTemplate02.xlsx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>

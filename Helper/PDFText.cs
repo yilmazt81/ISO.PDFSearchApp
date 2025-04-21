@@ -17,6 +17,7 @@ namespace ISO.PDFSearchApp.Helper
 
         public string FilePath { get; set; }
 
+        public bool StopShars { get;set; }
     }
 
     public class PDFDocumentSearchResult
