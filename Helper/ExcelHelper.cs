@@ -2,6 +2,7 @@
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Spreadsheet;
 using Lucene.Net.Util;
+using Org.BouncyCastle.Ocsp;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -40,9 +41,10 @@ namespace ISO.PDFSearchApp.Helper
                     int adressCount = 0;
                     string ui = string.Empty;
                     string inspectation = string.Empty;
-                    var productSum = ReadProductLine(onePDF.FilePath,ref productSummer,ref adressCount,ref ui,ref inspectation);
-
-                    SetCellValue(worksheetPart, rowIndex, "S", productSum);
+                    string qup = string.Empty;  
+                    var productSum = ReadProductLine(onePDF.FilePath,ref productSummer,ref adressCount,ref ui,ref inspectation,ref qup);
+                    SetCellValue(worksheetPart, rowIndex, "J", qup);
+                   
                     SetCellValue(worksheetPart, rowIndex, "I", ui);
                     SetCellValue(worksheetPart, rowIndex, "M", inspectation);
                     SetCellValue(worksheetPart, rowIndex, "H", adressCount.ToString());
@@ -55,11 +57,14 @@ namespace ISO.PDFSearchApp.Helper
 
                     SetCellValue(worksheetPart, rowIndex, "G", GetQuantity(onePDF.FilePath));
 
-
+                
 
                     SetCellValue(worksheetPart, rowIndex, "K", GetDeliveryInDays(onePDF.FilePath));
                     SetCellValue(worksheetPart, rowIndex, "L", GetDeliveryFob(onePDF.FilePath));
                     SetCellValue(worksheetPart, rowIndex, "O", GetPartPieceNumber(onePDF.FilePath));
+
+
+                    SetCellValue(worksheetPart, rowIndex, "S", productSum);
 
                     bool noHistory = CheckNoHistoryAvailable(onePDF.FilePath);
                     if (!noHistory)
@@ -71,6 +76,9 @@ namespace ISO.PDFSearchApp.Helper
                         SetCellValue(worksheetPart, rowIndex, "S", histroyQantity);
                         SetCellValue(worksheetPart, rowIndex, "T", unitCost);
                         SetCellValue(worksheetPart, rowIndex, "V", awdDate);
+
+                        var calculateHistoryTotal = (float.Parse(histroyQantity) * float.Parse(unitCost.Replace(".", ",")));
+                        SetCellValue(worksheetPart, rowIndex, "U", calculateHistoryTotal.ToString().Replace(",","."));
                     }
 
                     rowIndex++;
@@ -97,7 +105,8 @@ namespace ISO.PDFSearchApp.Helper
 
             }
         }
-        private string ReadProductLine(string pdfFilePath,ref int productSummer,ref int adressCount,ref string ui,ref string inspectationPoint)
+        private string ReadProductLine(string pdfFilePath,ref int productSummer,
+            ref int adressCount,ref string ui,ref string inspectationPoint,ref string qup)
         {
             var productLine = System.Configuration.ConfigurationManager.AppSettings["ProductLineParam"];
             var adressLineParams = System.Configuration.ConfigurationManager.AppSettings["AdressLineParam"].Split('|');
@@ -161,6 +170,12 @@ namespace ISO.PDFSearchApp.Helper
                             inspectationPoint = split[2];
                             inspectationPoint = inspectationPoint.Substring(0, 4);
                         }
+                    }
+
+                    if (findProductLine && txtLine.Contains("QUP:") && !txtLine.Contains("PKGING"))
+                    {
+                        var txtParts = txtLine.Substring(4,3);
+                        qup = txtParts;
                     }
                 } 
             }
