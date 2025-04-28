@@ -133,11 +133,8 @@ namespace ISO.PDFSearchApp.Helper
 
 
             List<PDFDocumentSearchResult> pDFDocumentSearchResults = new List<PDFDocumentSearchResult>();
-            // 4. Sorguyu çalıştır
-
-            /* Query query = parser.Parse(must[0]);
-             var results = searcher.Search(query, 500);
-             */
+            
+          
 
             Query query = parser.Parse("*:*");
             var results = searcher.Search(query, 500);

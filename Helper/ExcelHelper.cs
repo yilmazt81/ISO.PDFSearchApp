@@ -43,8 +43,7 @@ namespace ISO.PDFSearchApp.Helper
                     string inspectation = string.Empty;
                     string qup = string.Empty;  
                     var productSum = ReadProductLine(onePDF.FilePath,ref productSummer,ref adressCount,ref ui,ref inspectation,ref qup);
-                    SetCellValue(worksheetPart, rowIndex, "J", qup);
-                   
+                    SetCellValue(worksheetPart, rowIndex, "J", qup); 
                     SetCellValue(worksheetPart, rowIndex, "I", ui);
                     SetCellValue(worksheetPart, rowIndex, "M", inspectation);
                     SetCellValue(worksheetPart, rowIndex, "H", adressCount.ToString());
@@ -53,7 +52,7 @@ namespace ISO.PDFSearchApp.Helper
                     SetCellValue(worksheetPart, rowIndex, "C", nSN2);
                     SetCellValue(worksheetPart, rowIndex, "D", nssns);
                     SetCellValue(worksheetPart, rowIndex, "E", Path.GetFileNameWithoutExtension(onePDF.FileName));
-                 //   SetCellValue(worksheetPart, rowIndex, "F", GetItemDescription(onePDF.FilePath));
+                   SetCellValue(worksheetPart, rowIndex, "F", GetItemDescription(onePDF.FilePath));
 
                     SetCellValue(worksheetPart, rowIndex, "G", GetQuantity(onePDF.FilePath));
 
@@ -115,8 +114,7 @@ namespace ISO.PDFSearchApp.Helper
             var pdfIndexPath = Path.Combine(Path.GetDirectoryName(pdfFilePath), Path.GetFileNameWithoutExtension(pdfFilePath));
 
             var txtFiles = Directory.GetFiles(pdfIndexPath);
-
-            var findAdress = false;
+             
             foreach (var txtFile in txtFiles)
             {
                 var findProductLine = false;
@@ -149,13 +147,12 @@ namespace ISO.PDFSearchApp.Helper
                     
                     if (findProductLine)
                     {
-                        foreach (var adressLine in adressLineParams)
+                        foreach (var _ in from adressLine in adressLineParams
+                                          where txtLine.Contains(adressLine)
+                                          select new { })
                         {
-                            if (txtLine.Contains(adressLine))
-                            {
-                                findProductLine = true;
-                                adressCount++;
-                            }
+                            findProductLine = true;
+                            adressCount++;
                         }
                     }
 
@@ -196,8 +193,9 @@ namespace ISO.PDFSearchApp.Helper
                 foreach (var txtFile in txtFiles)
                 {
                     var txtLines = File.ReadAllLines(txtFile, Encoding.UTF8);
-                    foreach (var txtLine in txtLines)
+                    for (int i = 0; i < txtLines.Length; i++)
                     {
+                        string txtLine = txtLines[i];
                         if (txtLine.Contains(NAICSParam))
                         {
                             var startIndex = NAICSParam.Length + 1;
@@ -328,7 +326,7 @@ namespace ISO.PDFSearchApp.Helper
 
             return itemDescription;
         }
-        private string GetPartPieceNumber(string pdfFilePath)
+        private static string GetPartPieceNumber(string pdfFilePath)
         {
 
             var partypieceNumberParam = System.Configuration.ConfigurationManager.AppSettings["PartPieceNumber"];
@@ -341,7 +339,7 @@ namespace ISO.PDFSearchApp.Helper
             {
                 var txtLines = File.ReadAllLines(txtFile, Encoding.UTF8);
                 bool findItemDescription = false;
-                int quantityIndex = 0;
+              
 
                 foreach (var txtLine in txtLines)
                 {

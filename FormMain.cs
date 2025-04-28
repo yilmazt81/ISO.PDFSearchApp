@@ -38,13 +38,7 @@ namespace ISO.PDFSearchApp
             textBoxSourceFolder.Text = _ini.GetValue("SourceFolder");
             textBoxTargetFolder.Text = _ini.GetValue("TargetFolder");
 
-            // var maxTextSize = _ini.GetValue("MaxTextSize");
-            /* if (string.IsNullOrEmpty(maxTextSize))
-             {
-                 maxTextSize = "25";
-                 _ini.WriteValue("MaxTextSize", maxTextSize);
-                 _ini.Save();
-             }*/
+           
             dataGridViewSearchResult.AutoGenerateColumns = false;
 
 
