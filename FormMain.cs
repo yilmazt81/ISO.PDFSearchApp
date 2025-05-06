@@ -60,8 +60,7 @@ namespace ISO.PDFSearchApp
                 if (control is TextBox)
                 {
                     var textBox = (TextBox)control;
-                    listNotIncludeText.Add(textBox);
-                    //  textBox.MaxLength = int.Parse(maxTextSize);
+                    listNotIncludeText.Add(textBox); 
                     textBox.Text = _ini.GetValue(textBox.Name);
                 }
             }
@@ -84,8 +83,9 @@ namespace ISO.PDFSearchApp
         {
             try
             {
-                var files = System.IO.Directory.GetFiles(sourceFolder, "*.pdf", SearchOption.AllDirectories);
-
+                var files = System.IO.Directory.GetFiles(sourceFolder, "*.pdf", SearchOption.TopDirectoryOnly);
+                _ini.WriteValue("SourceFolder", textBoxSourceFolder.Text);
+                _ini.Save();
                 indexFolder = Path.Combine(sourceFolder, "indexfolder");
                 if (Directory.Exists(indexFolder))
                 {
@@ -107,31 +107,37 @@ namespace ISO.PDFSearchApp
                 {
                     // var pdfComplated = Path.ChangeExtension(file, ".txt");
 
-
-                    var fileFolder = Path.Combine(Path.GetDirectoryName(file), $"{Path.GetFileNameWithoutExtension(file)}");
-                    if (Directory.Exists(fileFolder))
-                    {
-                        Directory.Delete(fileFolder, true);
-                    }
-
-                    var pageContent = ReadPdfFile(file);
-
-
-                    lAllText.InsertRange(lAllText.Count, pageContent);
-                    foreach (var page in pageContent)
+                    try
                     {
 
-                        Directory.CreateDirectory(fileFolder);
-                        var pdfInner = Path.Combine(fileFolder, $"Page{page.PageNumber}.txt");
+                        var fileFolder = Path.Combine(Path.GetDirectoryName(file), $"{Path.GetFileNameWithoutExtension(file)}");
+                        if (Directory.Exists(fileFolder))
+                        {
+                            Directory.Delete(fileFolder, true);
+                        }
 
-                        File.WriteAllText(pdfInner, page.PageText, Encoding.UTF8);
+                        var pageContent = ReadPdfFile(file);
+
+
+                        lAllText.InsertRange(lAllText.Count, pageContent);
+                        foreach (var page in pageContent)
+                        {
+
+                            Directory.CreateDirectory(fileFolder);
+                            var pdfInner = Path.Combine(fileFolder, $"Page{page.PageNumber}.txt");
+
+                            File.WriteAllText(pdfInner, page.PageText, Encoding.UTF8);
+                        }
+                        firstFile++;
                     }
-                    firstFile++;
-                    // File.WriteAllText(pdfComplated, "Complated");
-                }
-                //Helper.LuceneHelper.CreateFolderIndex(indexFolder, lAllText);
-                _ini.WriteValue("SourceFolder", textBoxSourceFolder.Text);
-                _ini.Save();
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show($"Bir Hata Oluştu {ex.Message} FileName : "+Path.GetFileName(file), "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        break;
+                    }
+                  
+                } 
+             
                 MessageBox.Show("İşlem bitti , arama yapabilirsiniz", "Bilgi", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             catch (Exception ex)
@@ -144,7 +150,7 @@ namespace ISO.PDFSearchApp
         {
             List<PDFText> pDFTexts = new List<PDFText>();
             var skippText = System.Configuration.ConfigurationManager.AppSettings["PDFStopShars"];
-            bool findSkipText = false;
+           
             if (File.Exists(fileName))
             {
                 PdfReader pdfReader = new PdfReader(fileName);
@@ -171,10 +177,13 @@ namespace ISO.PDFSearchApp
                 }
                 pdfReader.Close();
             }
-
-            var maxstopChar = pDFTexts.Where(s => s.StopShars).Max(s => s.PageNumber);
-            var removeLen = pDFTexts.Count - maxstopChar;
-            pDFTexts.RemoveRange(maxstopChar, removeLen);
+            if (pDFTexts.Count(s => s.StopShars) != 0)
+            {
+                var maxstopChar = pDFTexts.Where(s => s.StopShars).Max(s => s.PageNumber);
+                var removeLen = pDFTexts.Count - maxstopChar;
+                pDFTexts.RemoveRange(maxstopChar, removeLen);
+            }
+          
 
             return pDFTexts;
         }

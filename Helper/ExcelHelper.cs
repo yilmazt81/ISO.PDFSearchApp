@@ -27,57 +27,64 @@ namespace ISO.PDFSearchApp.Helper
                 foreach (var onePDF in pDFDocuments)
                 {
                     var nssns = GetNSN2(onePDF.FilePath);
-                    var nSN2 = FormatNSN2(nssns);
-                    var nsn2Group = string.Empty;
-                    if (!string.IsNullOrEmpty(nSN2))
+                    try
                     {
-                        var nsnPart = nSN2.Split('-');
-                        if (nsnPart.Length > 1)
+                        var nSN2 = FormatNSN2(nssns);
+                        var nsn2Group = string.Empty;
+                        if (!string.IsNullOrEmpty(nSN2))
                         {
-                            nsn2Group = nsnPart[0];
+                            var nsnPart = nSN2.Split('-');
+                            if (nsnPart.Length > 1)
+                            {
+                                nsn2Group = nsnPart[0];
+                            }
+                        }
+                        int productSummer = 0;
+                        int adressCount = 0;
+                        string ui = string.Empty;
+                        string inspectation = string.Empty;
+                        string qup = string.Empty;
+                        var productSum = ReadProductLine(onePDF.FilePath, ref productSummer, ref adressCount, ref ui, ref inspectation, ref qup);
+                        SetCellValue(worksheetPart, rowIndex, "J", qup);
+                        SetCellValue(worksheetPart, rowIndex, "I", ui);
+                        SetCellValue(worksheetPart, rowIndex, "M", inspectation);
+                        SetCellValue(worksheetPart, rowIndex, "H", adressCount.ToString());
+                        SetCellValue(worksheetPart, rowIndex, "A", GetNAICS(onePDF.FilePath));
+                        SetCellValue(worksheetPart, rowIndex, "B", nsn2Group);
+                        SetCellValue(worksheetPart, rowIndex, "C", nSN2);
+                        SetCellValue(worksheetPart, rowIndex, "D", nssns);
+                        SetCellValue(worksheetPart, rowIndex, "E", Path.GetFileNameWithoutExtension(onePDF.FileName));
+                        SetCellValue(worksheetPart, rowIndex, "F", GetItemDescription(onePDF.FilePath));
+
+                        SetCellValue(worksheetPart, rowIndex, "G", GetQuantity(onePDF.FilePath));
+
+
+
+                        SetCellValue(worksheetPart, rowIndex, "K", GetDeliveryInDays(onePDF.FilePath));
+                        SetCellValue(worksheetPart, rowIndex, "L", GetDeliveryFob(onePDF.FilePath));
+                        SetCellValue(worksheetPart, rowIndex, "O", GetPartPieceNumber(onePDF.FilePath));
+
+
+                        SetCellValue(worksheetPart, rowIndex, "S", productSum);
+
+                        bool noHistory = CheckNoHistoryAvailable(onePDF.FilePath);
+                        if (!noHistory)
+                        {
+                            string histroyQantity = string.Empty;
+                            string unitCost = string.Empty;
+                            string awdDate = string.Empty;
+                            SetCellValue(worksheetPart, rowIndex, "R", GetCage(onePDF.FilePath, ref histroyQantity, ref unitCost, ref awdDate));
+                            SetCellValue(worksheetPart, rowIndex, "S", histroyQantity);
+                            SetCellValue(worksheetPart, rowIndex, "T", unitCost);
+                            SetCellValue(worksheetPart, rowIndex, "V", awdDate);
+
+                            var calculateHistoryTotal = (float.Parse(histroyQantity) * float.Parse(unitCost.Replace(".", ",")));
+                            SetCellValue(worksheetPart, rowIndex, "U", calculateHistoryTotal.ToString().Replace(",", "."));
                         }
                     }
-                    int productSummer = 0;
-                    int adressCount = 0;
-                    string ui = string.Empty;
-                    string inspectation = string.Empty;
-                    string qup = string.Empty;  
-                    var productSum = ReadProductLine(onePDF.FilePath,ref productSummer,ref adressCount,ref ui,ref inspectation,ref qup);
-                    SetCellValue(worksheetPart, rowIndex, "J", qup); 
-                    SetCellValue(worksheetPart, rowIndex, "I", ui);
-                    SetCellValue(worksheetPart, rowIndex, "M", inspectation);
-                    SetCellValue(worksheetPart, rowIndex, "H", adressCount.ToString());
-                    SetCellValue(worksheetPart, rowIndex, "A", GetNAICS(onePDF.FilePath));
-                    SetCellValue(worksheetPart, rowIndex, "B", nsn2Group);
-                    SetCellValue(worksheetPart, rowIndex, "C", nSN2);
-                    SetCellValue(worksheetPart, rowIndex, "D", nssns);
-                    SetCellValue(worksheetPart, rowIndex, "E", Path.GetFileNameWithoutExtension(onePDF.FileName));
-                   SetCellValue(worksheetPart, rowIndex, "F", GetItemDescription(onePDF.FilePath));
-
-                    SetCellValue(worksheetPart, rowIndex, "G", GetQuantity(onePDF.FilePath));
-
-                
-
-                    SetCellValue(worksheetPart, rowIndex, "K", GetDeliveryInDays(onePDF.FilePath));
-                    SetCellValue(worksheetPart, rowIndex, "L", GetDeliveryFob(onePDF.FilePath));
-                    SetCellValue(worksheetPart, rowIndex, "O", GetPartPieceNumber(onePDF.FilePath));
-
-
-                    SetCellValue(worksheetPart, rowIndex, "S", productSum);
-
-                    bool noHistory = CheckNoHistoryAvailable(onePDF.FilePath);
-                    if (!noHistory)
+                    catch (Exception ex)
                     {
-                        string histroyQantity = string.Empty;
-                        string unitCost = string.Empty;
-                        string awdDate = string.Empty;
-                        SetCellValue(worksheetPart, rowIndex, "R", GetCage(onePDF.FilePath, ref histroyQantity, ref unitCost, ref awdDate));
-                        SetCellValue(worksheetPart, rowIndex, "S", histroyQantity);
-                        SetCellValue(worksheetPart, rowIndex, "T", unitCost);
-                        SetCellValue(worksheetPart, rowIndex, "V", awdDate);
-
-                        var calculateHistoryTotal = (float.Parse(histroyQantity) * float.Parse(unitCost.Replace(".", ",")));
-                        SetCellValue(worksheetPart, rowIndex, "U", calculateHistoryTotal.ToString().Replace(",","."));
+                        System.Diagnostics.Debug.WriteLine(ex);
                     }
 
                     rowIndex++;
@@ -88,7 +95,7 @@ namespace ISO.PDFSearchApp.Helper
             }
 
         }
-        private int Yuvarla(string t)
+        private static  int Yuvarla(string t)
         {
             if (t.IndexOf(".") > -1)
             {
@@ -114,10 +121,10 @@ namespace ISO.PDFSearchApp.Helper
             var pdfIndexPath = Path.Combine(Path.GetDirectoryName(pdfFilePath), Path.GetFileNameWithoutExtension(pdfFilePath));
 
             var txtFiles = Directory.GetFiles(pdfIndexPath);
-             
+            var findProductLine = false;
             foreach (var txtFile in txtFiles)
             {
-                var findProductLine = false;
+              
                 var txtLines = File.ReadAllLines(txtFile, Encoding.UTF8);
                 foreach (var txtLine in txtLines)
                 {
@@ -181,7 +188,7 @@ namespace ISO.PDFSearchApp.Helper
 
         }
 
-        private string GetNAICS(string pdfFilePath)
+        private  static string GetNAICS(string pdfFilePath)
         {
             var NAICSParam = System.Configuration.ConfigurationManager.AppSettings["NAICSParam"];
             var NAICS = string.Empty;
@@ -211,15 +218,15 @@ namespace ISO.PDFSearchApp.Helper
                     }
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return "Error";
+                return "Error ";
             }
 
             return NAICS;
         }
 
-        private string GetItemDescription(string pdfFilePath)
+        private static string GetItemDescription(string pdfFilePath)
         {
             var itemDescriptionParam = System.Configuration.ConfigurationManager.AppSettings["ItemDescriptionParam"];
             var itemDescription = string.Empty;
