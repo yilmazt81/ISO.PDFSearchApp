@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.Remoting.Messaging;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -48,7 +49,7 @@ namespace ISO.PDFSearchApp.Helper
                         SetCellValue(worksheetPart, rowIndex, "J", qup);
                         SetCellValue(worksheetPart, rowIndex, "I", ui);
                         SetCellValue(worksheetPart, rowIndex, "M", inspectation);
-                        SetCellValue(worksheetPart, rowIndex, "H", adressCount.ToString());
+                        SetCellValue(worksheetPart, rowIndex, "H", GetDelqty(onePDF.FilePath));
                         SetCellValue(worksheetPart, rowIndex, "A", GetNAICS(onePDF.FilePath));
                         SetCellValue(worksheetPart, rowIndex, "B", nsn2Group);
                         SetCellValue(worksheetPart, rowIndex, "C", nSN2);
@@ -56,7 +57,7 @@ namespace ISO.PDFSearchApp.Helper
                         SetCellValue(worksheetPart, rowIndex, "E", Path.GetFileNameWithoutExtension(onePDF.FileName));
                         SetCellValue(worksheetPart, rowIndex, "F", GetItemDescription(onePDF.FilePath));
 
-                        SetCellValue(worksheetPart, rowIndex, "G", GetQuantity(onePDF.FilePath));
+                        SetCellValue(worksheetPart, rowIndex, "G", GetQuantity(onePDF.FilePath).Replace(",","."));
 
 
 
@@ -75,11 +76,11 @@ namespace ISO.PDFSearchApp.Helper
                             string awdDate = string.Empty;
                             SetCellValue(worksheetPart, rowIndex, "R", GetCage(onePDF.FilePath, ref histroyQantity, ref unitCost, ref awdDate));
                             SetCellValue(worksheetPart, rowIndex, "S", histroyQantity);
-                            SetCellValue(worksheetPart, rowIndex, "T", unitCost);
+                            SetCellValue(worksheetPart, rowIndex, "T", unitCost.Replace(".",","));
                             SetCellValue(worksheetPart, rowIndex, "V", awdDate);
 
                             var calculateHistoryTotal = (float.Parse(histroyQantity) * float.Parse(unitCost.Replace(".", ",")));
-                            SetCellValue(worksheetPart, rowIndex, "U", calculateHistoryTotal.ToString().Replace(",", "."));
+                            SetCellValue(worksheetPart, rowIndex, "U", calculateHistoryTotal.ToString().Replace(".", ","));
                         }
                     }
                     catch (Exception ex)
@@ -95,24 +96,52 @@ namespace ISO.PDFSearchApp.Helper
             }
 
         }
-        private static  int Yuvarla(string t)
+        private string GetDelqty(string pdfFilePath)
+        {
+            var adressCount = 0;
+            var productLine = System.Configuration.ConfigurationManager.AppSettings["PDFStopShars"];
+
+            var pdfIndexPath = Path.Combine(Path.GetDirectoryName(pdfFilePath), Path.GetFileNameWithoutExtension(pdfFilePath));
+
+            var txtFiles = Directory.GetFiles(pdfIndexPath);
+
+            foreach (var txtFile in txtFiles)
+            {
+
+                var txtLines = File.ReadAllLines(txtFile, Encoding.UTF8);
+                foreach (var txtLine in txtLines)
+                {
+                    if (txtLine.Contains(productLine))
+                    {
+                        adressCount++;
+                        continue;
+                    }
+                }
+
+            }
+
+
+
+            return adressCount.ToString();
+        }
+        private static int Yuvarla(string t)
         {
             if (t.IndexOf(".") > -1)
             {
                 var index = t.IndexOf(".");
 
-                var newT = t.Substring(0,index);
+                var newT = t.Substring(0, index);
 
                 return int.Parse(newT);
             }
             else
             {
-               return int.Parse(t);
+                return int.Parse(t);
 
             }
         }
-        private string ReadProductLine(string pdfFilePath,ref int productSummer,
-            ref int adressCount,ref string ui,ref string inspectationPoint,ref string qup)
+        private string ReadProductLine(string pdfFilePath, ref int productSummer,
+            ref int adressCount, ref string ui, ref string inspectationPoint, ref string qup)
         {
             var productLine = System.Configuration.ConfigurationManager.AppSettings["ProductLineParam"];
             var adressLineParams = System.Configuration.ConfigurationManager.AppSettings["AdressLineParam"].Split('|');
@@ -124,7 +153,7 @@ namespace ISO.PDFSearchApp.Helper
             var findProductLine = false;
             foreach (var txtFile in txtFiles)
             {
-              
+
                 var txtLines = File.ReadAllLines(txtFile, Encoding.UTF8);
                 foreach (var txtLine in txtLines)
                 {
@@ -136,22 +165,22 @@ namespace ISO.PDFSearchApp.Helper
                     if (findProductLine)
                     {
                         var txtParts = txtLine.Split(' ');
-                        if (txtParts.Length>18)
+                        if (txtParts.Length > 18)
                         {
                             try
                             {
-                              
-                                productSummer +=  Yuvarla(txtParts[19].Replace(",", ""));
+
+                                productSummer += Yuvarla(txtParts[19].Replace(",", ""));
                                 ui = txtParts[15];
                             }
                             catch (Exception)
                             {
-                                System.Diagnostics.Debug.WriteLine("ddd");
-                            } 
-                        } 
-                         
-                    } 
-                    
+                                // System.Diagnostics.Debug.WriteLine("ddd");
+                            }
+                        }
+
+                    }
+
                     if (findProductLine)
                     {
                         foreach (var _ in from adressLine in adressLineParams
@@ -176,19 +205,31 @@ namespace ISO.PDFSearchApp.Helper
                         }
                     }
 
-                    if (findProductLine && txtLine.Contains("QUP:") && !txtLine.Contains("PKGING"))
+                    if (findProductLine && txtLine.Contains("QUP:"))// && !txtLine.Contains("PKGING")
                     {
-                        var txtParts = txtLine.Substring(4,3);
-                        qup = txtParts;
+                        var txtParts = txtLine.Split(':');
+                        if (txtParts.Length == 2)
+                        {
+                            qup = txtParts[1];
+                        }
+                        else if (txtParts.Length > 2)
+                        {
+                            qup = txtParts[1].Substring(0, 4);
+                        }
+
+                        if (string.IsNullOrEmpty(qup))
+                        {
+                            System.Diagnostics.Debug.Write("ddd");
+                        }
                     }
-                } 
+                }
             }
 
             return "";
 
         }
 
-        private  static string GetNAICS(string pdfFilePath)
+        private static string GetNAICS(string pdfFilePath)
         {
             var NAICSParam = System.Configuration.ConfigurationManager.AppSettings["NAICSParam"];
             var NAICS = string.Empty;
@@ -346,7 +387,7 @@ namespace ISO.PDFSearchApp.Helper
             {
                 var txtLines = File.ReadAllLines(txtFile, Encoding.UTF8);
                 bool findItemDescription = false;
-              
+
 
                 foreach (var txtLine in txtLines)
                 {
@@ -355,27 +396,36 @@ namespace ISO.PDFSearchApp.Helper
                     if (txtLine.Contains(partypieceNumberParam))
                     {
                         findItemDescription = true;
-                        
+
 
                     }
                     if (findItemDescription)
                     {
-                        var split = txtLine.Trim().Split(' ').Where(s => !string.IsNullOrEmpty(s)).ToArray();
+                        var split = txtLine.Trim().Split(':').Where(s => !string.IsNullOrEmpty(s)).ToArray();
 
-                        if (split.Length == 4)
+                        if (split.Length == 2)
                         {
-                            partPieceNumber = split[3];
+                            partPieceNumber = split[1];
+                            break;
 
                         }
+                        else
+                        {
+                            findItemDescription = false;
+                        }
 
-                        break;
+
                     }
                 }
                 if (!string.IsNullOrEmpty(partPieceNumber))
                 {
                     break;
                 }
-            } 
+            }
+            if (string.IsNullOrEmpty(partPieceNumber))
+            {
+                System.Diagnostics.Debug.WriteLine("dss");
+            }
             return partPieceNumber;
 
         }
@@ -408,8 +458,8 @@ namespace ISO.PDFSearchApp.Helper
                     {
                         var split = txtLine.Trim().Split(' ').Where(s => !string.IsNullOrEmpty(s)).ToArray();
 
-                     
-                          deliveryFob = split[2]; 
+
+                        deliveryFob = split[2];
 
                         break;
                     }
@@ -438,7 +488,7 @@ namespace ISO.PDFSearchApp.Helper
                 var txtLines = File.ReadAllLines(txtFile, Encoding.UTF8);
                 bool findItemDescription = false;
                 int quantityIndex = 0;
-            
+
                 foreach (var txtLine in txtLines)
                 {
                     if (string.IsNullOrEmpty(txtLine.Trim()))
