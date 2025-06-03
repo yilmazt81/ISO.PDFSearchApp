@@ -57,13 +57,13 @@ namespace ISO.PDFSearchApp.Helper
                         SetCellValue(worksheetPart, rowIndex, "E", Path.GetFileNameWithoutExtension(onePDF.FileName));
                         SetCellValue(worksheetPart, rowIndex, "F", GetItemDescription(onePDF.FilePath));
 
-                        SetCellValue(worksheetPart, rowIndex, "G", GetQuantity(onePDF.FilePath).Replace(",","."));
+                        SetCellValue(worksheetPart, rowIndex, "G", GetQuantity(onePDF.FilePath).Replace(",", ""));
 
 
 
                         SetCellValue(worksheetPart, rowIndex, "K", GetDeliveryInDays(onePDF.FilePath));
                         SetCellValue(worksheetPart, rowIndex, "L", GetDeliveryFob(onePDF.FilePath));
-                        SetCellValue(worksheetPart, rowIndex, "O", GetPartPieceNumber(onePDF.FilePath));
+                        SetCellValue(worksheetPart, rowIndex, "O", GetPartPieceNumber(onePDF.FilePath).Replace("STD P/N", "").Replace("P/N ", ""));
 
 
                         SetCellValue(worksheetPart, rowIndex, "S", productSum);
@@ -72,15 +72,15 @@ namespace ISO.PDFSearchApp.Helper
                         if (!noHistory)
                         {
                             string histroyQantity = string.Empty;
-                            string unitCost = string.Empty;
+                            float unitCost = 0;
                             string awdDate = string.Empty;
                             SetCellValue(worksheetPart, rowIndex, "R", GetCage(onePDF.FilePath, ref histroyQantity, ref unitCost, ref awdDate));
                             SetCellValue(worksheetPart, rowIndex, "S", histroyQantity);
-                            SetCellValue(worksheetPart, rowIndex, "T", unitCost.Replace(".",","));
+                            SetCellValue(worksheetPart, rowIndex, "T", unitCost);
                             SetCellValue(worksheetPart, rowIndex, "V", awdDate);
 
-                            var calculateHistoryTotal = (float.Parse(histroyQantity) * float.Parse(unitCost.Replace(".", ",")));
-                            SetCellValue(worksheetPart, rowIndex, "U", calculateHistoryTotal.ToString().Replace(".", ","));
+                            var calculateHistoryTotal = (float.Parse(histroyQantity) * unitCost);
+                            SetCellValue(worksheetPart, rowIndex, "U", calculateHistoryTotal);
                         }
                     }
                     catch (Exception ex)
@@ -250,6 +250,11 @@ namespace ISO.PDFSearchApp.Helper
                             var lastIndex = txtLine.Length - startIndex;
 
                             NAICS = txtLine.Substring(startIndex, lastIndex).Trim();
+                            var seeIndex = NAICS.IndexOf("SEE");
+                            if (seeIndex != -1)
+                            {
+                                NAICS = NAICS.Substring(0, seeIndex);
+                            }
                             break;
                         }
                     }
@@ -476,7 +481,7 @@ namespace ISO.PDFSearchApp.Helper
             return deliveryFob;
 
         }
-        private string GetCage(string pdfFilePath, ref string historyQantity, ref string unitCost, ref string awdDate)
+        private string GetCage(string pdfFilePath, ref string historyQantity, ref float unitCost, ref string awdDate)
         {
             var itemDescriptionParam = System.Configuration.ConfigurationManager.AppSettings["CageParam"];
             var itemDescription = string.Empty;
@@ -505,7 +510,8 @@ namespace ISO.PDFSearchApp.Helper
 
                         itemDescription = split[0];
                         var splitQ = split[2].Split('.');
-                        unitCost = Rounding(split[3]);
+                        var tmpv = Rounding(split[3]);
+                        unitCost = float.Parse(tmpv.Replace(".", ","));
                         awdDate = split[4];
                         if (splitQ.Length != 1)
                         {
@@ -783,7 +789,26 @@ namespace ISO.PDFSearchApp.Helper
             }
         }
 
+        private void SetCellValue(WorksheetPart worksheetPart, uint rowIndex, string columnName, float fieldValue)
+        {
+            try
+            {
+                Cell cell = GetCell(worksheetPart, worksheetPart.Worksheet,
+                                  columnName, rowIndex);
 
+                cell.CellValue = new CellValue(fieldValue);
+
+
+                cell.DataType =
+                       new EnumValue<CellValues>(CellValues.Number);
+
+
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine(ex);
+            }
+        }
 
 
         private WorksheetPart
