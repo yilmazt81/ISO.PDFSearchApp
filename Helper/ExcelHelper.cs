@@ -321,9 +321,10 @@ namespace ISO.PDFSearchApp.Helper
             var pdfIndexPath = Path.Combine(Path.GetDirectoryName(pdfFilePath), Path.GetFileNameWithoutExtension(pdfFilePath));
 
             var txtFiles = Directory.GetFiles(pdfIndexPath);
-
+            var quantitySum = 0;
             try
             {
+          
                 foreach (var txtFile in txtFiles)
                 {
                     var txtLines = File.ReadAllLines(txtFile, Encoding.UTF8);
@@ -366,7 +367,8 @@ namespace ISO.PDFSearchApp.Helper
                     }
                     if (!string.IsNullOrEmpty(itemDescription))
                     {
-                        break;
+                        quantitySum += int.Parse(itemDescription.Replace(",","").Replace(".",""));
+                       // break;
                     }
                 }
             }
@@ -377,7 +379,7 @@ namespace ISO.PDFSearchApp.Helper
             }
 
 
-            return itemDescription;
+            return quantitySum.ToString();
         }
         private static string GetPartPieceNumber(string pdfFilePath)
         {
