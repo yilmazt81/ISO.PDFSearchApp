@@ -57,7 +57,7 @@ namespace ISO.PDFSearchApp.Helper
                         SetCellValue(worksheetPart, rowIndex, "E", Path.GetFileNameWithoutExtension(onePDF.FileName));
                         SetCellValue(worksheetPart, rowIndex, "F", GetItemDescription(onePDF.FilePath));
 
-                        SetCellValue(worksheetPart, rowIndex, "G", GetQuantity(onePDF.FilePath).Replace(",", ""));
+                        SetCellValue(worksheetPart, rowIndex, "G", GetQuantity(onePDF.FilePath));
 
 
 
@@ -314,14 +314,14 @@ namespace ISO.PDFSearchApp.Helper
             return itemDescription;
         }
 
-        private string GetQuantity(string pdfFilePath)
+        private long GetQuantity(string pdfFilePath)
         {
             var itemDescriptionParam = System.Configuration.ConfigurationManager.AppSettings["QuantityParam"];
             var itemDescription = string.Empty;
             var pdfIndexPath = Path.Combine(Path.GetDirectoryName(pdfFilePath), Path.GetFileNameWithoutExtension(pdfFilePath));
 
             var txtFiles = Directory.GetFiles(pdfIndexPath);
-            var quantitySum = 0;
+            long quantitySum = 0;
             try
             {
           
@@ -367,7 +367,8 @@ namespace ISO.PDFSearchApp.Helper
                     }
                     if (!string.IsNullOrEmpty(itemDescription))
                     {
-                        quantitySum += int.Parse(itemDescription.Replace(",","").Replace(".",""));
+                        quantitySum += long.Parse(itemDescription.Replace(",","").Replace(".",""));
+                        itemDescription = "";
                        // break;
                     }
                 }
@@ -375,11 +376,11 @@ namespace ISO.PDFSearchApp.Helper
             catch (Exception)
             {
 
-                return "Error";
+                return  0 ;
             }
 
 
-            return quantitySum.ToString();
+            return quantitySum;
         }
         private static string GetPartPieceNumber(string pdfFilePath)
         {
@@ -419,9 +420,7 @@ namespace ISO.PDFSearchApp.Helper
                         else
                         {
                             findItemDescription = false;
-                        }
-
-
+                        } 
                     }
                 }
                 if (!string.IsNullOrEmpty(partPieceNumber))

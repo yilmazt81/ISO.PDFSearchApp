@@ -16,6 +16,8 @@ using System.Xml.Linq;
 using Directory = System.IO.Directory;
 using System.Diagnostics;
 using DocumentFormat.OpenXml.Drawing.Charts;
+using ClosedXML.Excel;
+
 
 
 
@@ -25,6 +27,10 @@ namespace ISO.PDFSearchApp
     {
         List<TextBox> listInludeText = new List<TextBox>();
         List<TextBox> listNotIncludeText = new List<TextBox>();
+        List<string> listIncludeString = new List<string>();
+        List<string> listNotIncludeString = new List<string>();
+        string notincludeLastOpenFile = string.Empty;
+        string includeLastOpenFile = string.Empty;
         string indexFolder = string.Empty;
         List<PDFDocumentSearchResult> pDFDocumentSearchResults = new List<PDFDocumentSearchResult>();
         Ini _ini = null;
@@ -37,10 +43,41 @@ namespace ISO.PDFSearchApp
 
             textBoxSourceFolder.Text = _ini.GetValue("SourceFolder");
             textBoxTargetFolder.Text = _ini.GetValue("TargetFolder");
-
-           
+            notincludeLastOpenFile = _ini.GetValue("notincludeLastOpenFile");
+            includeLastOpenFile = _ini.GetValue("includeLastOpenFile");
             dataGridViewSearchResult.AutoGenerateColumns = false;
 
+            if (!string.IsNullOrEmpty(notincludeLastOpenFile))
+            {
+                var extention = Path.GetExtension(notincludeLastOpenFile);
+                if (extention.ToLower() == ".txt")
+                {
+                    listNotIncludeString = File.ReadAllLines(notincludeLastOpenFile).ToList();
+                }
+                else if (extention.ToLower() == ".xlsx")
+                {
+                    listNotIncludeString = readExcelFile(notincludeLastOpenFile);
+                }
+                labelOpenNotMustFileCount.Text = listNotIncludeString.Count.ToString();
+            }
+
+
+            if (!string.IsNullOrEmpty(includeLastOpenFile))
+            {
+                var extention = Path.GetExtension(includeLastOpenFile);
+                if (extention.ToLower() == ".txt")
+                {
+                    listIncludeString = File.ReadAllLines(includeLastOpenFile).ToList();
+                }
+                else if (extention.ToLower() == ".xlsx")
+                {
+                    listIncludeString = readExcelFile(includeLastOpenFile);
+                }
+
+
+                labelOpenMustFileCount.Text = listIncludeString.Count.ToString();
+
+            }
 
             foreach (var control in groupBoxInclude.Controls)
             {
@@ -60,7 +97,7 @@ namespace ISO.PDFSearchApp
                 if (control is TextBox)
                 {
                     var textBox = (TextBox)control;
-                    listNotIncludeText.Add(textBox); 
+                    listNotIncludeText.Add(textBox);
                     textBox.Text = _ini.GetValue(textBox.Name);
                 }
             }
@@ -132,12 +169,12 @@ namespace ISO.PDFSearchApp
                     }
                     catch (Exception ex)
                     {
-                        MessageBox.Show($"Bir Hata Oluştu {ex.Message} FileName : "+Path.GetFileName(file), "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MessageBox.Show($"Bir Hata Oluştu {ex.Message} FileName : " + Path.GetFileName(file), "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         break;
                     }
-                  
-                } 
-             
+
+                }
+
                 MessageBox.Show("İşlem bitti , arama yapabilirsiniz", "Bilgi", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             catch (Exception ex)
@@ -150,7 +187,7 @@ namespace ISO.PDFSearchApp
         {
             List<PDFText> pDFTexts = new List<PDFText>();
             var skippText = System.Configuration.ConfigurationManager.AppSettings["PDFStopShars"];
-           
+
             if (File.Exists(fileName))
             {
                 PdfReader pdfReader = new PdfReader(fileName);
@@ -183,7 +220,7 @@ namespace ISO.PDFSearchApp
                 var removeLen = pDFTexts.Count - maxstopChar;
                 pDFTexts.RemoveRange(maxstopChar, removeLen);
             }
-          
+
 
             return pDFTexts;
         }
@@ -191,27 +228,65 @@ namespace ISO.PDFSearchApp
         private void buttonSearch_Click(object sender, EventArgs e)
         {
             List<string> mustTex = new List<string>();
-            foreach (TextBox textBox in listInludeText)
+            if (string.IsNullOrEmpty(includeLastOpenFile))
             {
-                _ini.WriteValue(textBox.Name, textBox.Text);
-
-                if (!string.IsNullOrEmpty(textBox.Text))
+                foreach (TextBox textBox in listInludeText)
                 {
-                    mustTex.Add(textBox.Text);
+                    _ini.WriteValue(textBox.Name, textBox.Text);
+
+                    if (!string.IsNullOrEmpty(textBox.Text))
+                    {
+                        mustTex.Add(textBox.Text);
+                    }
+                }
+
+            }
+            else
+            {
+                mustTex = listIncludeString;
+
+                foreach (TextBox textBox in listInludeText)
+                {
+                    _ini.WriteValue(textBox.Name, textBox.Text);
+                     
                 }
             }
+          
+
+
             List<string> notmustText = new List<string>();
-            foreach (TextBox textBox in listNotIncludeText)
+            if (string.IsNullOrEmpty(notincludeLastOpenFile))
             {
 
-                _ini.WriteValue(textBox.Name, textBox.Text);
 
-                if (!string.IsNullOrEmpty(textBox.Text))
+                foreach (TextBox textBox in listNotIncludeText)
                 {
-                    notmustText.Add(textBox.Text);
+
+                    _ini.WriteValue(textBox.Name, textBox.Text);
+
+                    if (!string.IsNullOrEmpty(textBox.Text))
+                    {
+                        notmustText.Add(textBox.Text);
+                    }
                 }
             }
+            else
+            {
+                notmustText = listNotIncludeString;
+
+                foreach (TextBox textBox in listNotIncludeText)
+                {
+
+                    _ini.WriteValue(textBox.Name, textBox.Text);
+                     
+                }
+            }
+            _ini.WriteValue("notincludeLastOpenFile", notincludeLastOpenFile);
+            _ini.WriteValue("includeLastOpenFile", includeLastOpenFile);
             _ini.Save();
+
+
+   
 
             try
             {
@@ -252,6 +327,19 @@ namespace ISO.PDFSearchApp
             {
                 textBox.Text = string.Empty;
             }
+
+
+            listIncludeString.Clear();
+            labelOpenMustFileCount.Text = string.Empty;
+
+
+
+            labelOpenNotMustFileCount.Text = string.Empty;
+
+            listNotIncludeString.Clear();
+
+
+
         }
 
         private void buttonRefreshFolder_Click(object sender, EventArgs e)
@@ -338,5 +426,134 @@ namespace ISO.PDFSearchApp
 
             }
         }
+
+        private OpenFileDialog GetOpenFileDialog()
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog()
+            {
+                Filter = "*.txt|*.xlsx",
+                Multiselect = false,
+            };
+
+            return openFileDialog;
+        }
+
+
+        private List<string> readExcelFile(string fileName)
+        {
+            List<string> strings = new List<string>();
+
+            using (var workbook = new XLWorkbook(fileName))
+            {
+                var worksheet = workbook.Worksheet(1); // 1. sayfa
+                var range = worksheet.RangeUsed();     // kullanılan hücre aralığı
+
+                foreach (var row in range.Rows())
+                {
+                    foreach (var cell in row.Cells())
+                    {
+                        if (cell.Value.IsBlank)
+                            continue;
+                        strings.Add(cell.Value.GetText());
+                        // Console.Write($"{cell.Value}\t");
+                    }
+                    // Console.WriteLine();
+                }
+            }
+
+            return strings;
+        }
+        private void buttonOpenMustFile_Click(object sender, EventArgs e)
+        {
+            var fileDialog = GetOpenFileDialog();
+
+            if (fileDialog.ShowDialog() == DialogResult.OK)
+            {
+                var selectedFile = fileDialog.FileName;
+                var extention = Path.GetExtension(selectedFile);
+
+                includeLastOpenFile = fileDialog.FileName;
+                if (extention.ToLower() == ".txt")
+                {
+                    listIncludeString = File.ReadAllLines(selectedFile).ToList();
+                }
+                else if (extention.ToLower() == ".xlsx")
+                {
+                    listIncludeString = readExcelFile(selectedFile);
+                }
+
+                labelOpenMustFileCount.Text = listIncludeString.Count.ToString();
+                for (int i = 0; i < listInludeText.Count; i++)
+                {
+                    if (i > listIncludeString.Count)
+                    {
+                        break;
+                    }
+                    listInludeText[i].Text = listIncludeString[i];
+
+                }
+            }
+        }
+
+        private void buttonOpenMustFileClear_Click(object sender, EventArgs e)
+        {
+            labelOpenMustFileCount.Text = string.Empty;
+            
+            listIncludeString.Clear();
+            includeLastOpenFile = string.Empty;
+            for (int i = 0; i < listInludeText.Count; i++)
+            {
+
+                listInludeText[i].Text = string.Empty;
+
+            }
+        }
+
+        private void buttonOpenNotMustFileClear_Click(object sender, EventArgs e)
+        {
+            labelOpenNotMustFileCount.Text = string.Empty;
+            notincludeLastOpenFile = string.Empty;
+            listNotIncludeString.Clear();
+
+            for (int i = 0; i < listNotIncludeText.Count; i++)
+            {
+
+                listNotIncludeText[i].Text = string.Empty;
+
+            }
+
+        }
+
+        private void buttonOpenNotMustFile_Click(object sender, EventArgs e)
+        {
+            var fileDialog = GetOpenFileDialog();
+
+            if (fileDialog.ShowDialog() == DialogResult.OK)
+            {
+                var selectedFile = fileDialog.FileName;
+                var extention = Path.GetExtension(selectedFile);
+                if (extention.ToLower() == ".txt")
+                {
+                    listNotIncludeString = File.ReadAllLines(selectedFile).ToList();
+                }
+                else if (extention.ToLower() == ".xlsx")
+                {
+                    listNotIncludeString = readExcelFile(selectedFile);
+                }
+
+                notincludeLastOpenFile = fileDialog.FileName;
+                labelOpenNotMustFileCount.Text = listNotIncludeString.Count.ToString();
+                for (int i = 0; i < listNotIncludeText.Count; i++)
+                {
+                    if (i > listNotIncludeString.Count)
+                    {
+                        break;
+                    }
+                    listNotIncludeText[i].Text = listNotIncludeString[i];
+
+                }
+            }
+        }
     }
+
 }

@@ -69,11 +69,17 @@
             this.textBoxSourceFolder = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.dataGridViewSearchResult = new System.Windows.Forms.DataGridView();
-            this.cMenuStripGrid = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.MenuItemOpenPDF = new System.Windows.Forms.ToolStripMenuItem();
             this.Id = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.FileName = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.FilePath = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.cMenuStripGrid = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.MenuItemOpenPDF = new System.Windows.Forms.ToolStripMenuItem();
+            this.buttonOpenMustFile = new System.Windows.Forms.Button();
+            this.buttonOpenNotMustFile = new System.Windows.Forms.Button();
+            this.labelOpenMustFileCount = new System.Windows.Forms.Label();
+            this.labelOpenNotMustFileCount = new System.Windows.Forms.Label();
+            this.buttonOpenNotMustFileClear = new System.Windows.Forms.Button();
+            this.buttonOpenMustFileClear = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -177,6 +183,9 @@
             // 
             this.groupBoxNotInclude.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBoxNotInclude.Controls.Add(this.labelOpenNotMustFileCount);
+            this.groupBoxNotInclude.Controls.Add(this.buttonOpenNotMustFileClear);
+            this.groupBoxNotInclude.Controls.Add(this.buttonOpenNotMustFile);
             this.groupBoxNotInclude.Controls.Add(this.textBoxNotInlude6);
             this.groupBoxNotInclude.Controls.Add(this.label8);
             this.groupBoxNotInclude.Controls.Add(this.textBoxNotInlude5);
@@ -308,6 +317,9 @@
             // 
             this.groupBoxInclude.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBoxInclude.Controls.Add(this.labelOpenMustFileCount);
+            this.groupBoxInclude.Controls.Add(this.buttonOpenMustFileClear);
+            this.groupBoxInclude.Controls.Add(this.buttonOpenMustFile);
             this.groupBoxInclude.Controls.Add(this.textBoxInlude6);
             this.groupBoxInclude.Controls.Add(this.label7);
             this.groupBoxInclude.Controls.Add(this.textBoxInlude5);
@@ -479,22 +491,6 @@
             this.dataGridViewSearchResult.TabIndex = 0;
             this.dataGridViewSearchResult.SelectionChanged += new System.EventHandler(this.dataGridViewSearchResult_SelectionChanged);
             // 
-            // cMenuStripGrid
-            // 
-            this.cMenuStripGrid.ImageScalingSize = new System.Drawing.Size(20, 20);
-            this.cMenuStripGrid.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.MenuItemOpenPDF});
-            this.cMenuStripGrid.Name = "cMenuStripGrid";
-            this.cMenuStripGrid.Size = new System.Drawing.Size(130, 30);
-            // 
-            // MenuItemOpenPDF
-            // 
-            this.MenuItemOpenPDF.Image = ((System.Drawing.Image)(resources.GetObject("MenuItemOpenPDF.Image")));
-            this.MenuItemOpenPDF.Name = "MenuItemOpenPDF";
-            this.MenuItemOpenPDF.Size = new System.Drawing.Size(129, 26);
-            this.MenuItemOpenPDF.Text = "PDF Aç";
-            this.MenuItemOpenPDF.Click += new System.EventHandler(this.MenuItemOpenPDF_Click);
-            // 
             // Id
             // 
             this.Id.DataPropertyName = "Id";
@@ -518,6 +514,82 @@
             this.FilePath.MinimumWidth = 6;
             this.FilePath.Name = "FilePath";
             this.FilePath.Width = 250;
+            // 
+            // cMenuStripGrid
+            // 
+            this.cMenuStripGrid.ImageScalingSize = new System.Drawing.Size(20, 20);
+            this.cMenuStripGrid.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.MenuItemOpenPDF});
+            this.cMenuStripGrid.Name = "cMenuStripGrid";
+            this.cMenuStripGrid.Size = new System.Drawing.Size(130, 30);
+            // 
+            // MenuItemOpenPDF
+            // 
+            this.MenuItemOpenPDF.Image = ((System.Drawing.Image)(resources.GetObject("MenuItemOpenPDF.Image")));
+            this.MenuItemOpenPDF.Name = "MenuItemOpenPDF";
+            this.MenuItemOpenPDF.Size = new System.Drawing.Size(129, 26);
+            this.MenuItemOpenPDF.Text = "PDF Aç";
+            this.MenuItemOpenPDF.Click += new System.EventHandler(this.MenuItemOpenPDF_Click);
+            // 
+            // buttonOpenMustFile
+            // 
+            this.buttonOpenMustFile.Image = ((System.Drawing.Image)(resources.GetObject("buttonOpenMustFile.Image")));
+            this.buttonOpenMustFile.Location = new System.Drawing.Point(254, 2);
+            this.buttonOpenMustFile.Name = "buttonOpenMustFile";
+            this.buttonOpenMustFile.Size = new System.Drawing.Size(54, 23);
+            this.buttonOpenMustFile.TabIndex = 12;
+            this.buttonOpenMustFile.UseVisualStyleBackColor = true;
+            this.buttonOpenMustFile.Click += new System.EventHandler(this.buttonOpenMustFile_Click);
+            // 
+            // buttonOpenNotMustFile
+            // 
+            this.buttonOpenNotMustFile.Image = ((System.Drawing.Image)(resources.GetObject("buttonOpenNotMustFile.Image")));
+            this.buttonOpenNotMustFile.Location = new System.Drawing.Point(254, 0);
+            this.buttonOpenNotMustFile.Name = "buttonOpenNotMustFile";
+            this.buttonOpenNotMustFile.Size = new System.Drawing.Size(54, 23);
+            this.buttonOpenNotMustFile.TabIndex = 13;
+            this.buttonOpenNotMustFile.Text = "...";
+            this.buttonOpenNotMustFile.UseVisualStyleBackColor = true;
+            this.buttonOpenNotMustFile.Click += new System.EventHandler(this.buttonOpenNotMustFile_Click);
+            // 
+            // labelOpenMustFileCount
+            // 
+            this.labelOpenMustFileCount.AutoSize = true;
+            this.labelOpenMustFileCount.Location = new System.Drawing.Point(374, 5);
+            this.labelOpenMustFileCount.Name = "labelOpenMustFileCount";
+            this.labelOpenMustFileCount.Size = new System.Drawing.Size(29, 20);
+            this.labelOpenMustFileCount.TabIndex = 14;
+            this.labelOpenMustFileCount.Text = "    ";
+            // 
+            // labelOpenNotMustFileCount
+            // 
+            this.labelOpenNotMustFileCount.AutoSize = true;
+            this.labelOpenNotMustFileCount.Location = new System.Drawing.Point(374, 3);
+            this.labelOpenNotMustFileCount.Name = "labelOpenNotMustFileCount";
+            this.labelOpenNotMustFileCount.Size = new System.Drawing.Size(29, 20);
+            this.labelOpenNotMustFileCount.TabIndex = 15;
+            this.labelOpenNotMustFileCount.Text = "    ";
+            // 
+            // buttonOpenNotMustFileClear
+            // 
+            this.buttonOpenNotMustFileClear.Image = ((System.Drawing.Image)(resources.GetObject("buttonOpenNotMustFileClear.Image")));
+            this.buttonOpenNotMustFileClear.Location = new System.Drawing.Point(314, 0);
+            this.buttonOpenNotMustFileClear.Name = "buttonOpenNotMustFileClear";
+            this.buttonOpenNotMustFileClear.Size = new System.Drawing.Size(54, 23);
+            this.buttonOpenNotMustFileClear.TabIndex = 14;
+            this.buttonOpenNotMustFileClear.Text = "...";
+            this.buttonOpenNotMustFileClear.UseVisualStyleBackColor = true;
+            this.buttonOpenNotMustFileClear.Click += new System.EventHandler(this.buttonOpenNotMustFileClear_Click);
+            // 
+            // buttonOpenMustFileClear
+            // 
+            this.buttonOpenMustFileClear.Image = ((System.Drawing.Image)(resources.GetObject("buttonOpenMustFileClear.Image")));
+            this.buttonOpenMustFileClear.Location = new System.Drawing.Point(314, 2);
+            this.buttonOpenMustFileClear.Name = "buttonOpenMustFileClear";
+            this.buttonOpenMustFileClear.Size = new System.Drawing.Size(54, 23);
+            this.buttonOpenMustFileClear.TabIndex = 13;
+            this.buttonOpenMustFileClear.UseVisualStyleBackColor = true;
+            this.buttonOpenMustFileClear.Click += new System.EventHandler(this.buttonOpenMustFileClear_Click);
             // 
             // FormMain
             // 
@@ -594,6 +666,12 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn Id;
         private System.Windows.Forms.DataGridViewTextBoxColumn FileName;
         private System.Windows.Forms.DataGridViewTextBoxColumn FilePath;
+        private System.Windows.Forms.Button buttonOpenNotMustFile;
+        private System.Windows.Forms.Button buttonOpenMustFile;
+        private System.Windows.Forms.Label labelOpenMustFileCount;
+        private System.Windows.Forms.Label labelOpenNotMustFileCount;
+        private System.Windows.Forms.Button buttonOpenNotMustFileClear;
+        private System.Windows.Forms.Button buttonOpenMustFileClear;
     }
 }
 
