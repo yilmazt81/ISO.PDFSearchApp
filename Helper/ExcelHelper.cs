@@ -1,7 +1,7 @@
 ﻿using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Spreadsheet;
-using Lucene.Net.Util;
+ 
 using Org.BouncyCastle.Ocsp;
 using System;
 using System.Collections.Generic;
